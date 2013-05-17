@@ -47,7 +47,7 @@ public class MainMenu extends BasicGame {
                 container.setShowFPS(true);
                 
                 index = 0;
-                text = new String[] {"hi", "hui", "halli", "hallo", "exit"};
+                text = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
                 len = text.length;
                 font = new SimpleFont[len];
                 
@@ -64,6 +64,7 @@ public class MainMenu extends BasicGame {
         public void render(GameContainer container, Graphics g) {
         	int tmpW, tmpH;
         	int start = 20;
+        	
         	
         	for(int i = 0; i < len; i++){
         		tmpW = font[i].get().getWidth(text[i]);
