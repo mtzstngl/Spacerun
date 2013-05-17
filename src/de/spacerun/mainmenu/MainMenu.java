@@ -34,69 +34,71 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.util.Log;
 
 public class MainMenu extends BasicGame {
-        private SimpleFont font[];
-        private int height, width, index, len;
-        private String[] text;
-        
-        public MainMenu() {
-                super("Font Test");
-        }
+	private SimpleFont font[];
+    private int height, width, index, len;
+    private String[] text;
+    
+    public MainMenu() {
+    	super("Font Test");
+    }
 
-        @Override
-		public void init(GameContainer container) throws SlickException {
-                container.setShowFPS(true);
-                
-                index = 0;
-                text = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
-                len = text.length;
-                font = new SimpleFont[len];
-                
-                for(int i = 0; i < len; i++){
-                	font[i] = new SimpleFont("Comic Sans MS", Font.PLAIN, 20);
-                }
-                font[0].setColor(Color.red);
-                
-                height = container.getHeight();
-                width = container.getWidth();
-        }
+    @Override
+    public void init(GameContainer container) throws SlickException {
+    	container.setShowFPS(true);
         
-        @Override
-        public void render(GameContainer container, Graphics g) {
-        	int tmpW, tmpH;
-        	int start = 20;
-        	
-        	
-        	for(int i = 0; i < len; i++){
-        		tmpW = font[i].get().getWidth(text[i]);
-        		tmpH = font[i].get().getHeight(text[i]);
-        		font[i].get().drawString(width/2 - tmpW/2, start, text[i]);
-        		start += tmpH + 20;
+    	index = 0;
+    	text = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
+        len = text.length;
+        font = new SimpleFont[len];
+
+        for(int i = 0; i < len; i++){
+        	font[i] = new SimpleFont("Comic Sans MS", Font.PLAIN, 20);
+        }
+        font[0].setColor(Color.red);
+
+        height = container.getHeight();
+        width = container.getWidth();
+    }
+        
+    @Override
+    public void render(GameContainer container, Graphics g) {
+    	int tmpW, tmpH;
+        int start = 20;
+        
+        for(int i = 0; i < len; i++){
+        	tmpW = font[i].get().getWidth(text[i]);
+        	tmpH = font[i].get().getHeight(text[i]);
+        	font[i].get().drawString(width/2 - tmpW/2, start, text[i]);
+        	start += tmpH + 20;
+        }
+    }
+    
+    //FIXME: when pressing up/down the menu items disappear
+    @Override
+    public void update (GameContainer container, int delta) throws SlickException {
+    	Input input = container.getInput();
+        
+        if(input.isKeyPressed(Input.KEY_UP)){
+        	if(index > 0){
+        		font[index].setColor();
+                index--;
+                font[index].setColor(Color.red);
         	}
+        }else if(input.isKeyPressed(Input.KEY_DOWN)){
+        	if(index < (len -1)){
+        		font[index].setColor();
+                index++;
+                font[index].setColor(Color.red);
+        	}
+        }else if(input.isKeyPressed(Input.KEY_ENTER)){
+        	//TODO: Implement this method
         }
-        
-        @Override
-        public void update (GameContainer container, int delta) throws SlickException {
-                Input input = container.getInput();
-                
-                if(input.isKeyPressed(Input.KEY_UP)){
-                	if(index > 0){
-                		font[index].setColor();
-                		index--;
-                		font[index].setColor(Color.red);
-                	}
-                }else if(input.isKeyPressed(Input.KEY_DOWN)){
-                	if(index < (len -1)){
-                		font[index].setColor();
-                		index++;
-                		font[index].setColor(Color.red);
-                	}
-                }
-        }
+    }
 
-        public static void main(String[] args) throws SlickException, IOException {
-        	Log.setVerbose(false);
-            AppGameContainer container = new AppGameContainer(new MainMenu());
-            container.setDisplayMode(512, 600, false);
-            container.start();
-        }
+    public static void main(String[] args) throws SlickException, IOException {
+    	Log.setVerbose(false);
+        AppGameContainer container = new AppGameContainer(new MainMenu());
+        container.setDisplayMode(512, 600, false);
+        container.start();
+    }
 }
