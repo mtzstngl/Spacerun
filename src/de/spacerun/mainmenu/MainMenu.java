@@ -43,8 +43,8 @@ public class MainMenu extends BasicGame {
     }
 
     @Override
-    public void init(GameContainer container) throws SlickException {
-    	container.setShowFPS(true);
+    public void init(GameContainer gc) throws SlickException {
+    	gc.setShowFPS(true);
         
     	index = 0;
     	text = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
@@ -56,12 +56,12 @@ public class MainMenu extends BasicGame {
         }
         font[0].setColor(Color.red);
 
-        height = container.getHeight();
-        width = container.getWidth();
+        height = gc.getHeight();
+        width = gc.getWidth();
     }
         
     @Override
-    public void render(GameContainer container, Graphics g) {
+    public void render(GameContainer gc, Graphics g) {
     	int tmpW, tmpH;
         int start = 20;
         
@@ -75,8 +75,8 @@ public class MainMenu extends BasicGame {
     
     //FIXME: when pressing up/down the menu items disappear
     @Override
-    public void update (GameContainer container, int delta) throws SlickException {
-    	Input input = container.getInput();
+    public void update (GameContainer gc, int delta) throws SlickException {
+    	Input input = gc.getInput();
         
         if(input.isKeyPressed(Input.KEY_UP)){
         	if(index > 0){
@@ -97,8 +97,8 @@ public class MainMenu extends BasicGame {
 
     public static void main(String[] args) throws SlickException, IOException {
     	Log.setVerbose(false);
-        AppGameContainer container = new AppGameContainer(new MainMenu());
-        container.setDisplayMode(512, 600, false);
-        container.start();
+        AppGameContainer gc = new AppGameContainer(new MainMenu());
+        gc.setDisplayMode(512, 600, false);
+        gc.start();
     }
 }
