@@ -31,6 +31,8 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import de.spacerun.main.Spacerun;
+
 public class MainMenuState extends BasicGameState {
 	private SimpleFont font;
     private int width, index, len;
@@ -84,12 +86,16 @@ public class MainMenuState extends BasicGameState {
         	}
         }else if(input.isKeyPressed(Input.KEY_ENTER)){
         	if(text[index] == "Spiel starten"){
-        		//sbg.enterState(Spacerun.GAMESTATE);
+        		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+        		sbg.enterState(Spacerun.GAMESTATE);
         	}else if(text[index] == "Multiplayer"){
+        		//sbg.getState(Spacerun.MULTIPLAYER).init(gc, sbg);
         		//sbg.enterState(Spacerun.MULTIPLAYER);
         	}else if(text[index] == "Highscores"){
+        		//sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg);
         		//sbg.enterState(Spacerun.HIGHSCORESTATE);
         	}else if(text[index] == "Steuerung"){
+        		//sbg.getState(Spacerun.CONTROL).init(gc, sbg);
         		//sbg.enterState(Spacerun.CONTROL);
         	}else if(text[index] == "Exit"){
         		gc.exit();

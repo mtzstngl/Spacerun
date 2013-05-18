@@ -21,6 +21,79 @@
 */
 package de.spacerun.game;
 
-public class GameState {
+import java.awt.Font;
+
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
+
+import de.spacerun.main.Spacerun;
+import de.spacerun.mainmenu.SimpleFont;
+
+public class GameState extends BasicGameState {
+	private int stateID;
+	private int width, height, score;
+	private SimpleFont font;
+	private Rectangle playerRec;
+	private float playerPos;
+	
+	public GameState(int ID){
+		this.stateID = ID;
+	}
+
+	@Override
+	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
+		font = new SimpleFont("Arial", Font.PLAIN, 20);
+		score = 0;
+		width = gc.getWidth();
+		height = gc.getHeight();
+		playerRec = new Rectangle(width/2 - 10, height - 50, 20, 50);
+		playerPos = width/2 - 10;
+	}
+
+	@Override
+	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		//Highscore rendering
+		int tmpWidth, yOffset;
+		
+		tmpWidth = font.get().getWidth(Integer.toString(score));
+		yOffset = font.get().getYOffset(Integer.toString(score));
+		font.get().drawString(width - tmpWidth - yOffset, 0, Integer.toString(score));
+		
+		//Game rendering
+		g.setColor(Color.cyan);
+		g.fillRect(playerRec.getX(), playerRec.getY(), playerRec.getWidth(), playerRec.getHeight());
+		g.draw(playerRec);
+	}
+
+	@Override
+	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		Input input = gc.getInput();
+		
+		if(input.isKeyDown(Input.KEY_LEFT)){
+			if(playerRec.getX() > 0){
+				playerPos -= 0.4f * delta; //delta is to make sure we travel the same way each render/time
+				playerRec.setX(playerPos);
+			}
+		}else if(input.isKeyDown(Input.KEY_RIGHT)){
+			if((playerRec.getX() + playerRec.getWidth()) < width){
+				playerPos += 0.4f * delta;
+				playerRec.setX(playerPos);
+			}
+		}else if(input.isKeyDown(Input.KEY_ESCAPE)){
+			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+			sbg.enterState(Spacerun.MAINMENUSTATE);
+		}
+	}
+
+	@Override
+	public int getID() {
+		return stateID;
+	}
 
 }

@@ -26,6 +26,7 @@ import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import de.spacerun.game.GameState;
 import de.spacerun.mainmenu.MainMenuState;
 
 public class Spacerun extends StateBasedGame{
@@ -36,14 +37,16 @@ public class Spacerun extends StateBasedGame{
 	public Spacerun(){
 		super("Spacerun");
 		
-		//TODO: Add HIGHSCORESTATE and GAMESTATE
+		//TODO: Add HIGHSCORESTATE
 		this.addState(new MainMenuState(MAINMENUSTATE));
+		this.addState(new GameState(GAMESTATE));
 		this.enterState(MAINMENUSTATE);
 	}
 
 	@Override
 	public void initStatesList(GameContainer gc) throws SlickException {
 		this.getState(MAINMENUSTATE).init(gc, this);
+		this.getState(GAMESTATE).init(gc, this);
 	}
 	
     public static void main(String[] args) throws SlickException {
