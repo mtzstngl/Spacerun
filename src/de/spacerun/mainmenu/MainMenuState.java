@@ -21,18 +21,18 @@
 */
 package de.spacerun.mainmenu;
 
-import java.awt.Color;
 import java.awt.Font;
 
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
+import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
 public class MainMenuState extends BasicGameState {
-	private SimpleFont font[];
+	private SimpleFont font;
     private int width, index, len;
     private String[] text;
     private int stateID;
@@ -46,45 +46,41 @@ public class MainMenuState extends BasicGameState {
     	index = 0;
     	text = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
         len = text.length;
-        font = new SimpleFont[len];
-
-        for(int i = 0; i < len; i++){
-        	font[i] = new SimpleFont("Arial", Font.PLAIN, 20);
-        }
-        font[0].setColor(Color.red);
+        font = new SimpleFont("Arial", Font.PLAIN, 20);
 
         width = gc.getWidth();
     }
         
     @Override
     public void render(GameContainer gc, StateBasedGame sbg, Graphics g) {
-    	int tmpWidth, tmpHeight;
-        int start = 20;
+    	float tmpWidth, tmpHeight;
+        float start = 20;
 
         for(int i = 0; i < len; i++){
-        	tmpWidth = font[i].get().getWidth(text[i]);
-        	tmpHeight = font[i].get().getHeight(text[i]);
-        	font[i].get().drawString(width/2 - tmpWidth/2, start, text[i]);
+        	tmpWidth = font.get().getWidth(text[i]);
+        	tmpHeight = font.get().getHeight(text[i]);
+        	
+        	if(i == index){
+        		font.get().drawString(width/2 - tmpWidth/2, start, text[i], Color.red);
+        	}else{
+        		font.get().drawString(width/2 - tmpWidth/2, start, text[i]);
+        	}
+        	
         	start += tmpHeight + 20;
         }
     }
     
-    //FIXME: when pressing up/down the menu items disappear
     @Override
     public void update (GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
     	Input input = gc.getInput();
-        
+    	
         if(input.isKeyPressed(Input.KEY_UP)){
         	if(index > 0){
-        		font[index].setColor();
                 index--;
-                font[index].setColor(Color.red);
         	}
         }else if(input.isKeyPressed(Input.KEY_DOWN)){
         	if(index < (len -1)){
-        		font[index].setColor();
                 index++;
-                font[index].setColor(Color.red);
         	}
         }else if(input.isKeyPressed(Input.KEY_ENTER)){
         	if(text[index] == "Spiel starten"){
