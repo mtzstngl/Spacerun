@@ -33,7 +33,7 @@ import org.newdawn.slick.state.StateBasedGame;
 
 public class MainMenuState extends BasicGameState {
 	private SimpleFont font[];
-    private int height, width, index, len;
+    private int width, index, len;
     private String[] text;
     private int stateID;
     
@@ -53,7 +53,6 @@ public class MainMenuState extends BasicGameState {
         }
         font[0].setColor(Color.red);
 
-        height = gc.getHeight();
         width = gc.getWidth();
     }
         
@@ -88,7 +87,17 @@ public class MainMenuState extends BasicGameState {
                 font[index].setColor(Color.red);
         	}
         }else if(input.isKeyPressed(Input.KEY_ENTER)){
-        	//TODO: Implement the menu item handling
+        	if(text[index] == "Spiel starten"){
+        		//sbg.enterState(Spacerun.GAMESTATE);
+        	}else if(text[index] == "Multiplayer"){
+        		//sbg.enterState(Spacerun.MULTIPLAYER);
+        	}else if(text[index] == "Highscores"){
+        		//sbg.enterState(Spacerun.HIGHSCORESTATE);
+        	}else if(text[index] == "Steuerung"){
+        		//sbg.enterState(Spacerun.CONTROL);
+        	}else if(text[index] == "Exit"){
+        		gc.exit();
+        	}
         }
     }
 
