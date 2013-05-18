@@ -23,36 +23,33 @@ package de.spacerun.mainmenu;
 
 import java.awt.Color;
 import java.awt.Font;
-import java.io.IOException;
 
-import org.newdawn.slick.AppGameContainer;
-import org.newdawn.slick.BasicGame;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
-import org.newdawn.slick.util.Log;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
 
-public class MainMenu extends BasicGame {
+public class MainMenuState extends BasicGameState {
 	private SimpleFont font[];
     private int height, width, index, len;
     private String[] text;
+    private int stateID;
     
-    public MainMenu() {
-    	super("Font Test");
+    public MainMenuState(int ID) {
+    	this.stateID = ID;
     }
 
     @Override
-    public void init(GameContainer gc) throws SlickException {
-    	gc.setShowFPS(true);
-        
+    public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
     	index = 0;
     	text = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
         len = text.length;
         font = new SimpleFont[len];
 
         for(int i = 0; i < len; i++){
-        	font[i] = new SimpleFont("Comic Sans MS", Font.PLAIN, 20);
+        	font[i] = new SimpleFont("Arial", Font.PLAIN, 20);
         }
         font[0].setColor(Color.red);
 
@@ -61,21 +58,21 @@ public class MainMenu extends BasicGame {
     }
         
     @Override
-    public void render(GameContainer gc, Graphics g) {
-    	int tmpW, tmpH;
+    public void render(GameContainer gc, StateBasedGame sbg, Graphics g) {
+    	int tmpWidth, tmpHeight;
         int start = 20;
-        
+
         for(int i = 0; i < len; i++){
-        	tmpW = font[i].get().getWidth(text[i]);
-        	tmpH = font[i].get().getHeight(text[i]);
-        	font[i].get().drawString(width/2 - tmpW/2, start, text[i]);
-        	start += tmpH + 20;
+        	tmpWidth = font[i].get().getWidth(text[i]);
+        	tmpHeight = font[i].get().getHeight(text[i]);
+        	font[i].get().drawString(width/2 - tmpWidth/2, start, text[i]);
+        	start += tmpHeight + 20;
         }
     }
     
     //FIXME: when pressing up/down the menu items disappear
     @Override
-    public void update (GameContainer gc, int delta) throws SlickException {
+    public void update (GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
     	Input input = gc.getInput();
         
         if(input.isKeyPressed(Input.KEY_UP)){
@@ -91,14 +88,12 @@ public class MainMenu extends BasicGame {
                 font[index].setColor(Color.red);
         	}
         }else if(input.isKeyPressed(Input.KEY_ENTER)){
-        	//TODO: Implement this method
+        	//TODO: Implement the menu item handling
         }
     }
 
-    public static void main(String[] args) throws SlickException, IOException {
-    	Log.setVerbose(false);
-        AppGameContainer gc = new AppGameContainer(new MainMenu());
-        gc.setDisplayMode(512, 600, false);
-        gc.start();
-    }
+	@Override
+	public int getID() {
+		return stateID;
+	}
 }
