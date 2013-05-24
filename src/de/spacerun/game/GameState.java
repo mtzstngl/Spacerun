@@ -63,8 +63,8 @@ public class GameState extends BasicGameState {
 		this.stateID = ID;
 	}
 	//TODO: make this relative: line: 75, 84, 86
-	//TODO: maybe switch to inputlistenprovider see:
-	//https://bitbucket.org/kevglass/slick/src/96a4b840204c/trunk/Slick/src/org/newdawn/slick/tests/InputProviderTest.java
+	//TODO: maybe switch to inputlistenprovider see: http://goo.gl/yX9c5
+	//TODO: replace player and obstacles with images
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		font = new SimpleFont("Arial", Font.PLAIN, 20);
