@@ -31,6 +31,7 @@ import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
+import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
@@ -41,59 +42,94 @@ public class GameState extends BasicGameState {
 	private int stateID;
 	private int width, height;
 	private SimpleFont font;
-	private Rectangle playerRec;
-	private float playerPos, playerSpeed;
 	
+	private Rectangle playerRec;
+	private float playerSpeed;
+	
+	private boolean notHit;
 	private long startTime;
 	private long score;
+	private long speedStep;
 	
 	private int sectorWidth;
 	private Deque<ObstacleRow> obstacles;
 	private float obstacleSpeed, obstacleGap;
 	
+	private TextField nameField;
+	private boolean selection, enteredName;
+	private String[] menu;
+	
 	public GameState(int ID){
 		this.stateID = ID;
 	}
-//TODO: provide a way to input your name
+	//TODO: make this relative: line: 75, 84, 86
+	//TODO: maybe switch to inputlistenprovider see:
+	//https://bitbucket.org/kevglass/slick/src/96a4b840204c/trunk/Slick/src/org/newdawn/slick/tests/InputProviderTest.java
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		font = new SimpleFont("Arial", Font.PLAIN, 20);
-		score = 0;
-		playerSpeed = 0.55f;
 		width = gc.getWidth();
 		height = gc.getHeight();
-		playerRec = new Rectangle(width/2 - 10, height - 50, 20, 50);//TODO: make this relative
-		playerPos = width/2 - 10;
 		
-		startTime = System.currentTimeMillis(); //TODO: Maybe change score system
+		playerSpeed = 0.55f;
+		playerRec = new Rectangle(width/2 - 10, height - 50, 20, 50);
+		
+		notHit = true;
+		speedStep = 100;
+		score = 0;
+		startTime = System.currentTimeMillis(); //The Highscore is time based
 		
 		obstacleSpeed = 0.01f;
 		obstacleGap = height / 4;
-		sectorWidth = width / 10;//TODO: make this relative
+		sectorWidth = width / 10;
 		obstacles = new ArrayDeque<ObstacleRow>();
-		obstacles.add(new ObstacleRow(sectorWidth, 10, -40));//TODO: make this relative
+		obstacles.add(new ObstacleRow(sectorWidth, 10, -40));
+		
+		nameField = new TextField(gc, font.get(), width/2 -150, height/2 -15, 300, 30);
+		nameField.setFocus(true);
+		selection = false; //true is right; false is left
+		enteredName = false;
+		menu = new String[] {"Nochmal", "Abbrechen"};
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
-		//Highscore rendering
-		int tmpWidth, yOffset;
-		
-		score = (System.currentTimeMillis() - startTime) / 100;
-		
-		tmpWidth = font.get().getWidth(Long.toString(score));
-		yOffset = font.get().getYOffset(Long.toString(score));
-		font.get().drawString(width - tmpWidth - yOffset, 0, Long.toString(score));
-		
 		//Game rendering
-		g.setColor(Color.cyan);
+		g.setColor(Color.gray);
 		g.fillRect(playerRec.getX(), playerRec.getY(), playerRec.getWidth(), playerRec.getHeight());
 		g.draw(playerRec);
 		
 		if(!obstacles.isEmpty()){
 			for(ObstacleRow i : obstacles){
-				i.draw(g, Color.red);
+				i.draw(g, Color.green);
 			}
+		}
+		
+		//Highscore rendering
+		int tmpWidth, tmpHeight;
+
+		tmpWidth = font.get().getWidth(Long.toString(score));
+		tmpHeight = font.get().getYOffset(Long.toString(score));
+		font.get().drawString(width - tmpWidth - tmpHeight, 0, Long.toString(score));
+		
+		//TextField rendering
+		if(!notHit){
+			g.setColor(Color.red); //Otherwise it would be green 
+			g.drawRect(nameField.getX(), nameField.getY(), nameField.getWidth(), nameField.getHeight()); //Otherwise it would only show half of the frame
+			nameField.render(gc, g);
+			
+			Color tmpColor[];
+			if(selection){
+				tmpColor = new Color[] {Color.white, Color.red};
+			}else{
+				tmpColor = new Color[] {Color.red, Color.white};
+			}
+			tmpWidth = font.get().getWidth(menu[0]);
+			tmpHeight = font.get().getHeight(menu[0]);
+			font.get().drawString(nameField.getX() - tmpWidth - 10, nameField.getY() + tmpHeight + 10, menu[0], tmpColor[0]);
+			
+			tmpHeight = font.get().getHeight(menu[1]);
+			font.get().drawString(nameField.getX() + nameField.getWidth() + 10, nameField.getY() + tmpHeight + 10, menu[1], tmpColor[1]);
 		}
 	}
 
@@ -101,32 +137,76 @@ public class GameState extends BasicGameState {
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
 		
-		if(input.isKeyDown(Input.KEY_LEFT)){
-			if(playerRec.getX() > 0){
-				playerPos -= playerSpeed * delta; //delta is to make sure we travel the same way each render/frame
-				playerRec.setX(playerPos);
-			}
-		}else if(input.isKeyDown(Input.KEY_RIGHT)){
-			if((playerRec.getX() + playerRec.getWidth()) < width){
-				playerPos += playerSpeed * delta;
-				playerRec.setX(playerPos);
-			}
-		}else if(input.isKeyDown(Input.KEY_ESCAPE)){
+		//exiting gamestate
+		if(input.isKeyPressed(Input.KEY_ESCAPE)){
 			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
 			sbg.enterState(Spacerun.MAINMENUSTATE);
 		}
 		
-		if(!obstacles.isEmpty()){
-			if((obstacles.getLast().getPosition() - obstacleGap) >= 0){
+		//moving player
+		if(notHit){
+			if(input.isKeyDown(Input.KEY_LEFT)){
+				if(playerRec.getX() > 0){ //delta is to make sure we travel the same way each render/frame
+					playerRec.setX(playerRec.getX() - playerSpeed * delta);
+
+				}
+			}
+			if(input.isKeyDown(Input.KEY_RIGHT)){
+				if((playerRec.getX() + playerRec.getWidth()) < width){
+					playerRec.setX(playerRec.getX() + playerSpeed * delta);
+				}
+			}
+		
+			//generating, moving, hitting obstacles
+			if(!obstacles.isEmpty()){
+				if((obstacles.getLast().getPosition() - obstacleGap) >= 0){
+					obstacles.add(new ObstacleRow(sectorWidth, 10, -40));
+				}
+				for(ObstacleRow i : obstacles){
+					i.setPosition(obstacleSpeed * delta);
+					if(i.intersects(playerRec)){
+						notHit = false;
+					}
+					if(i.getPosition() >= height){
+						obstacles.remove(i);
+					}
+				}
+			}else{
 				obstacles.add(new ObstacleRow(sectorWidth, 10, -40));
 			}
-			for(ObstacleRow i : obstacles){
-				i.setPosition(obstacleSpeed * delta);
-				if(i.intersects(playerRec)){
-					System.out.println("you got hit");
-				}
-				if(i.getPosition() >= height){
-					obstacles.remove(i);
+		
+			//highscore handling
+			score = (System.currentTimeMillis() - startTime) / 100;
+			if(score >= speedStep){
+				speedStep += 100;
+				obstacleSpeed += 0.002f;
+			}
+		}else{
+			if(enteredName){
+				if(input.isKeyPressed(Input.KEY_RIGHT)){
+		        	if(!selection){
+		        		selection = true;
+		        	}
+		        }else if(input.isKeyPressed(Input.KEY_LEFT)){
+		        	if(selection){
+		                selection = false;
+		        	}
+		        }else if(input.isKeyPressed(Input.KEY_ENTER)){
+		        	if(selection){
+		        		sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+		        		sbg.enterState(Spacerun.MAINMENUSTATE);
+		        	}else{
+		        		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+		        		sbg.enterState(Spacerun.GAMESTATE);
+		        	}
+		        }
+			}else{
+				//TODO: send name + score to highscore class
+				if(input.isKeyPressed(Input.KEY_ENTER)){
+					System.out.println(nameField.getText() + ": " + Long.toString(score));
+					nameField.setFocus(false);
+					nameField.setAcceptingInput(false);
+					enteredName = true;
 				}
 			}
 		}

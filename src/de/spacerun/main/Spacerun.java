@@ -52,6 +52,7 @@ public class Spacerun extends StateBasedGame{
     public static void main(String[] args) throws SlickException {
         AppGameContainer app = new AppGameContainer(new Spacerun());
         app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
+        app.setMouseGrabbed(true);
         app.setShowFPS(true);
         app.start();
     }
