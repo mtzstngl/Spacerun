@@ -27,27 +27,31 @@ import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
 import de.spacerun.game.GameState;
+import de.spacerun.highscore.HighscoreState;
 import de.spacerun.mainmenu.MainMenuState;
 
 public class Spacerun extends StateBasedGame{
-	public static final int MAINMENUSTATE = 0;
-	public static final int HIGHSCORESTATE = 1;
-	public static final int GAMESTATE = 2;
+	  public static final int MAINMENUSTATE = 0;
+	  public static final int GAMESTATE = 1;
+	  public static final int HIGHSCORESTATE = 2;
+	  //public static final int MULTIPLAYERSTATE = 3;
+	  //public static final int CONTROLSTATE = 4;
 	
-	public Spacerun(){
-		super("Spacerun");
+	  public Spacerun(){
+		    super("Spacerun");
 		
-		//TODO: Add HIGHSCORESTATE
-		this.addState(new MainMenuState(MAINMENUSTATE));
-		this.addState(new GameState(GAMESTATE));
-		this.enterState(MAINMENUSTATE);
-	}
+		    this.addState(new MainMenuState(MAINMENUSTATE));
+		    this.addState(new GameState(GAMESTATE));
+		    this.addState(new HighscoreState(HIGHSCORESTATE));
+		    //this.addState(new MultiplayerState(MULTIPLAYERSTATE));
+		    //this.addState(new ControlState(CONTROLSTATE));
+		    this.enterState(MAINMENUSTATE);
+	  }
 
-	@Override
-	public void initStatesList(GameContainer gc) throws SlickException {
-		this.getState(MAINMENUSTATE).init(gc, this);
-		this.getState(GAMESTATE).init(gc, this);
-	}
+	  @Override
+	  public void initStatesList(GameContainer gc) throws SlickException {
+		    this.getState(MAINMENUSTATE).init(gc, this);
+	  }
 	
     public static void main(String[] args) throws SlickException {
         AppGameContainer app = new AppGameContainer(new Spacerun());
