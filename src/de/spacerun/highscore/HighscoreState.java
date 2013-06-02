@@ -21,6 +21,119 @@
 */
 package de.spacerun.highscore;
 
-public class HighscoreState {
+import java.awt.Font;
+import java.util.ArrayList;
 
+import org.newdawn.slick.Color;
+import org.newdawn.slick.GameContainer;
+import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Input;
+import org.newdawn.slick.SlickException;
+import org.newdawn.slick.state.BasicGameState;
+import org.newdawn.slick.state.StateBasedGame;
+
+import de.spacerun.main.Spacerun;
+import de.spacerun.mainmenu.SimpleFont;
+
+public class HighscoreState extends BasicGameState{
+	private FileHandler fHandler;
+  private int stateID;
+	private boolean selection; //true = right; false = left
+  private SimpleFont textFont, headerFont, menuFont;
+  private int textSpace, width, headerSpace, headerWidth;
+  private int menuX, menuY;
+  private String[] menu;
+  private int[] textWidth;
+  private ArrayList<String> nameList;
+  private ArrayList<Long> scoreList;
+
+	public HighscoreState(int ID){
+	  this.stateID = ID;
+	} 
+
+  @Override
+  public void init(GameContainer gc, StateBasedGame sbg) throws SlickException{
+    fHandler = new FileHandler();
+    selection = false;
+
+    nameList = fHandler.getHighscoreNames();
+    scoreList = fHandler.getHighscoreScore();
+    
+    width = gc.getWidth();
+    headerSpace = gc.getHeight()/11;
+    textSpace = (gc.getHeight() - (2 * headerSpace))/22; // divided by 11 to get all the spaces then by 2 to get fontsize
+    textWidth = new int[nameList.size()];
+    menu = new String[] {"Zurück", "Scores löschen"};
+
+    textFont = new SimpleFont("Arial", Font.PLAIN, textSpace, java.awt.Color.lightGray);
+    headerFont = new SimpleFont("Arial", Font.PLAIN, headerSpace);
+    menuFont = new SimpleFont("Arial", Font.PLAIN, textSpace/2);
+
+    headerWidth = headerFont.get().getWidth("High Scores")/2;
+    menuX = width - 10 - menuFont.get().getWidth(menu[1]);
+    menuY = gc.getHeight() - 10 - menuFont.get().getHeight(menu[0]);
+
+    int i = 0;
+    for(String name : nameList){ //most of the time we only need half the width
+      textWidth[i] = textFont.get().getWidth(Integer.toString(i+1) + 
+          ". " + name + ": " + Long.toString(scoreList.get(i)))/2;
+      i++;
+    }
+  }
+  
+  @Override
+  public void render(GameContainer gc, StateBasedGame sbg, Graphics g){
+    int i = 0;
+    int y = 2 * headerSpace;
+    
+    headerFont.get().drawString(width/2 - headerWidth, 0, "High Scores");
+    
+    for(String name : nameList){
+      textFont.get().drawString(width/2 - textWidth[i], y, Integer.toString(i+1) + 
+          ". " + name + ": " + Long.toString(scoreList.get(i)));
+      i++;
+      y += textSpace * 2;
+    }
+
+    if(selection){
+      menuFont.get().drawString(10, menuY, menu[0]);  
+      menuFont.get().drawString(menuX, menuY, menu[1], Color.red);  
+    }else{
+      menuFont.get().drawString(10, menuY, menu[0], Color.red);  
+      menuFont.get().drawString(menuX, menuY, menu[1]);  
+    }
+  }
+
+  @Override
+  public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException{
+    Input input = gc.getInput();
+
+    if(input.isKeyPressed(Input.KEY_LEFT)){
+      if(selection){
+        selection = false;
+      }
+    }else if(input.isKeyPressed(Input.KEY_RIGHT)){
+      if(!selection){
+        selection = true; 
+      }
+    }else if(input.isKeyPressed(Input.KEY_ENTER)){
+      if(selection){
+        fHandler.deleteHighscore();
+        sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg); //we need to update the screen; the easiest way
+        sbg.enterState(Spacerun.HIGHSCORESTATE);
+      }else{
+        sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+        sbg.enterState(Spacerun.MAINMENUSTATE);
+      }
+    }
+    if(input.isKeyPressed(Input.KEY_ESCAPE)){
+      sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+      sbg.enterState(Spacerun.MAINMENUSTATE);
+    }
+  }
+
+  @Override
+  public int getID(){
+    return stateID;
+  }
 }
