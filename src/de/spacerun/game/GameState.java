@@ -35,9 +35,12 @@ import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 
+import de.spacerun.highscore.FileHandler;
 import de.spacerun.main.Spacerun;
 import de.spacerun.mainmenu.SimpleFont;
 
+//TODO: make this relative: line: 75, 84, 86
+//TODO: replace player and obstacles with images
 public class GameState extends BasicGameState {
 	private int stateID;
 	private int width, height;
@@ -62,9 +65,7 @@ public class GameState extends BasicGameState {
 	public GameState(int ID){
 		this.stateID = ID;
 	}
-	//TODO: make this relative: line: 75, 84, 86
-	//TODO: maybe switch to inputlistenprovider see: http://goo.gl/yX9c5
-	//TODO: replace player and obstacles with images
+	
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
 		font = new SimpleFont("Arial", Font.PLAIN, 20);
@@ -200,9 +201,8 @@ public class GameState extends BasicGameState {
 		    	}
 		    }
 			}else{
-				//TODO: send name + score to highscore class
 				if(input.isKeyPressed(Input.KEY_ENTER)){
-					System.out.println(nameField.getText() + ": " + Long.toString(score));
+					new FileHandler().writeHighscore(nameField.getText(), score);
 					nameField.setFocus(false);
 					nameField.setAcceptingInput(false);
 					enteredName = true;

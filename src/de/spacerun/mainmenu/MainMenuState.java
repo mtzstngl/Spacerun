@@ -33,6 +33,8 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import de.spacerun.main.Spacerun;
 
+//TODO: add headline "SPACERUN"
+//TODO: make text size and placement relative; see HighscoreState
 public class MainMenuState extends BasicGameState {
   private SimpleFont font;
   private int width, index, len;
