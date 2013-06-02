@@ -148,7 +148,6 @@ public class GameState extends BasicGameState {
 			if(input.isKeyDown(Input.KEY_LEFT)){
 				if(playerRec.getX() > 0){ //delta is to make sure we travel the same way each render/frame
 					playerRec.setX(playerRec.getX() - playerSpeed * delta);
-
 				}
 			}
 			if(input.isKeyDown(Input.KEY_RIGHT)){
@@ -184,22 +183,22 @@ public class GameState extends BasicGameState {
 		}else{
 			if(enteredName){
 				if(input.isKeyPressed(Input.KEY_RIGHT)){
-		        	if(!selection){
-		        		selection = true;
-		        	}
-		        }else if(input.isKeyPressed(Input.KEY_LEFT)){
-		        	if(selection){
-		                selection = false;
-		        	}
-		        }else if(input.isKeyPressed(Input.KEY_ENTER)){
-		        	if(selection){
-		        		sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
-		        		sbg.enterState(Spacerun.MAINMENUSTATE);
-		        	}else{
-		        		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
-		        		sbg.enterState(Spacerun.GAMESTATE);
-		        	}
-		        }
+		      if(!selection){
+		    		selection = true;
+	      	}
+	      }else if(input.isKeyPressed(Input.KEY_LEFT)){
+		    	if(selection){
+		    	  selection = false;
+		    	}
+		    }else if(input.isKeyPressed(Input.KEY_ENTER)){
+        	if(selection){
+        	  sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+		    		sbg.enterState(Spacerun.MAINMENUSTATE);
+		    	}else{
+        		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+        		sbg.enterState(Spacerun.GAMESTATE);
+		    	}
+		    }
 			}else{
 				//TODO: send name + score to highscore class
 				if(input.isKeyPressed(Input.KEY_ENTER)){
@@ -216,5 +215,4 @@ public class GameState extends BasicGameState {
 	public int getID() {
 		return stateID;
 	}
-
 }
