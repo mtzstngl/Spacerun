@@ -33,12 +33,12 @@ import org.newdawn.slick.state.StateBasedGame;
 
 import de.spacerun.main.Spacerun;
 
-//TODO: add headline "SPACERUN"
-//TODO: make text size and placement relative; see HighscoreState
 public class MainMenuState extends BasicGameState {
-  private SimpleFont font;
-  private int width, index, len;
-  private String[] text;
+  private SimpleFont menuFont, headerFont;
+  private int width, index, headerSpace, menuSpace;
+  private int headerWidth;
+  private int[] menuWidth;
+  private String[] menuText;
   private int stateID;
   
   public MainMenuState(int ID) {
@@ -48,29 +48,36 @@ public class MainMenuState extends BasicGameState {
   @Override
   public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
   	index = 0;
-    text = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
-    len = text.length;
-    font = new SimpleFont("Arial", Font.PLAIN, 20);
-
+    menuText = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
+    
     width = gc.getWidth();
+    headerSpace = gc.getHeight()/(menuText.length + 1);
+    menuSpace = (gc.getHeight() - (2 * headerSpace))/((menuText.length + 1) * 2);
+    
+    menuFont = new SimpleFont("Arial", Font.PLAIN, menuSpace/2, java.awt.Color.lightGray);
+    headerFont = new SimpleFont("Arial", Font.PLAIN, headerSpace);
+    
+    headerWidth = headerFont.get().getWidth("Spacerun")/2;
+    menuWidth = new int[menuText.length];
+    for(int i = 0; i < menuText.length; i++){
+      menuWidth[i] = menuFont.get().getWidth(menuText[i])/2;
+    }
   }
  
   @Override
   public void render(GameContainer gc, StateBasedGame sbg, Graphics g) {
-    float tmpWidth, tmpHeight;
-    float start = 20;
+    float start = 2 * headerSpace;
+    
+    headerFont.get().drawString(width/2 - headerWidth, 0, "Spacerun");
 
-    for(int i = 0; i < len; i++){
-  	  tmpWidth = font.get().getWidth(text[i]);
-  	  tmpHeight = font.get().getHeight(text[i]);
-    	
+    for(int i = 0; i < menuText.length; i++){
     	if(i == index){
-    	  font.get().drawString(width/2 - tmpWidth/2, start, text[i], Color.red);
+    	  menuFont.get().drawString(width/2 - menuWidth[i], start, menuText[i], Color.red);
     	}else{
-    	  font.get().drawString(width/2 - tmpWidth/2, start, text[i]);
+    	  menuFont.get().drawString(width/2 - menuWidth[i], start, menuText[i]);
     	}
     	
-    	start += tmpHeight + 20;
+    	start += menuSpace * 2;
     }
   }
   
@@ -83,23 +90,23 @@ public class MainMenuState extends BasicGameState {
         index--;
   	  }
     }else if(input.isKeyPressed(Input.KEY_DOWN)){
-      if(index < (len -1)){
+      if(index < (menuText.length -1)){
         index++;
       }
     }else if(input.isKeyPressed(Input.KEY_ENTER)){
-  	  if(text[index] == "Spiel starten"){
+  	  if(menuText[index] == "Spiel starten"){
   		  sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
   		  sbg.enterState(Spacerun.GAMESTATE);
-    	}else if(text[index] == "Multiplayer"){
+    	}else if(menuText[index] == "Multiplayer"){
     	  //sbg.getState(Spacerun.MULTIPLAYERSTATE).init(gc, sbg);
   		  //sbg.enterState(Spacerun.MULTIPLAYERSTATE);
-  	  }else if(text[index] == "Highscores"){
+  	  }else if(menuText[index] == "Highscores"){
   	    sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg);
     	  sbg.enterState(Spacerun.HIGHSCORESTATE);
-      }else if(text[index] == "Steuerung"){
+      }else if(menuText[index] == "Steuerung"){
   		  //sbg.getState(Spacerun.CONTROLSTATE).init(gc, sbg);
   		  //sbg.enterState(Spacerun.CONTROLSTATE);
-  		}else if(text[index] == "Exit"){
+  		}else if(menuText[index] == "Exit"){
     	  gc.exit();
   	  }   
     }
