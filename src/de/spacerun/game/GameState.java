@@ -39,7 +39,6 @@ import de.spacerun.highscore.FileHandler;
 import de.spacerun.main.Spacerun;
 import de.spacerun.mainmenu.SimpleFont;
 
-//TODO: make this relative: line: 75, 84, 86
 //TODO: replace player and obstacles with images
 public class GameState extends BasicGameState {
 	private int stateID;
@@ -61,19 +60,23 @@ public class GameState extends BasicGameState {
 	private TextField nameField;
 	private boolean selection, enteredName;
 	private String[] menu;
-	
+	private int[] menuX;
+	private int[] menuY;
+
 	public GameState(int ID){
 		this.stateID = ID;
 	}
 	
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		font = new SimpleFont("Arial", Font.PLAIN, 20);
+		font = new SimpleFont("Arial", Font.PLAIN, gc.getHeight()/54);
 		width = gc.getWidth();
 		height = gc.getHeight();
 		
 		playerSpeed = 0.55f;
-		playerRec = new Rectangle(width/2 - 10, height - 50, 20, 50);
+		int playerHeight = gc.getHeight()/22;
+		int playerWidth = gc.getWidth()/96;
+		playerRec = new Rectangle(width/2 - playerWidth/2, height - playerHeight, playerWidth, playerHeight);		
 		
 		notHit = true;
 		speedStep = 100;
@@ -86,11 +89,21 @@ public class GameState extends BasicGameState {
 		obstacles = new ArrayDeque<ObstacleRow>();
 		obstacles.add(new ObstacleRow(sectorWidth, 10, -40));
 		
-		nameField = new TextField(gc, font.get(), width/2 -150, height/2 -15, 300, 30);
+		int fieldWidth = gc.getWidth() / 6;
+		int fieldHeight = gc.getHeight() / 36;
+		nameField = new TextField(gc, font.get(), width/2 - fieldWidth/2, 
+		    height/2 - fieldHeight/2, fieldWidth, fieldHeight);
 		nameField.setFocus(true);
 		selection = false; //true is right; false is left
 		enteredName = false;
+		
 		menu = new String[] {"Nochmal", "Abbrechen"};
+    menuX = new int[2];
+    menuY = new int[2];
+    menuX[0] = nameField.getX() - font.get().getWidth(menu[0]) - 10;
+    menuX[1] = nameField.getX() + nameField.getWidth() + 10;
+    menuY[0] = nameField.getY() + font.get().getHeight(menu[0]) + 10;
+    menuY[1] = nameField.getY() + font.get().getHeight(menu[1]) + 10;
 	}
 
 	@Override
@@ -107,30 +120,24 @@ public class GameState extends BasicGameState {
 		}
 		
 		//Highscore rendering
-		int tmpWidth, tmpHeight;
-
-		tmpWidth = font.get().getWidth(Long.toString(score));
-		tmpHeight = font.get().getYOffset(Long.toString(score));
+		int tmpWidth = font.get().getWidth(Long.toString(score));
+		int tmpHeight = font.get().getYOffset(Long.toString(score));
 		font.get().drawString(width - tmpWidth - tmpHeight, 0, Long.toString(score));
 		
 		//TextField rendering
 		if(!notHit){
 			g.setColor(Color.red); //Otherwise it would be green 
-			g.drawRect(nameField.getX(), nameField.getY(), nameField.getWidth(), nameField.getHeight()); //Otherwise it would only show half of the frame
+			g.drawRect(nameField.getX(), nameField.getY(), nameField.getWidth(), nameField.getHeight());
+			    //Otherwise it would only show half of the frame
 			nameField.render(gc, g);
 			
-			Color tmpColor[];
 			if(selection){
-				tmpColor = new Color[] {Color.white, Color.red};
+			  font.get().drawString(menuX[0], menuY[0], menu[0], Color.white);
+			  font.get().drawString(menuX[1], menuY[1], menu[1], Color.red);
 			}else{
-				tmpColor = new Color[] {Color.red, Color.white};
+			  font.get().drawString(menuX[0], menuY[0], menu[0], Color.red);
+			  font.get().drawString(menuX[1], menuY[1], menu[1], Color.white);
 			}
-			tmpWidth = font.get().getWidth(menu[0]);
-			tmpHeight = font.get().getHeight(menu[0]);
-			font.get().drawString(nameField.getX() - tmpWidth - 10, nameField.getY() + tmpHeight + 10, menu[0], tmpColor[0]);
-			
-			tmpHeight = font.get().getHeight(menu[1]);
-			font.get().drawString(nameField.getX() + nameField.getWidth() + 10, nameField.getY() + tmpHeight + 10, menu[1], tmpColor[1]);
 		}
 	}
 
