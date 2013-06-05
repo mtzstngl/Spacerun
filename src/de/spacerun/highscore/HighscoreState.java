@@ -43,7 +43,7 @@ public class HighscoreState extends BasicGameState{
   private int textSpace, width, headerSpace, headerWidth;
   private int menuX, menuY;
   private String[] menu;
-  private int[] textWidth;
+  private int[] scoreWidth;
   private ArrayList<String> nameList;
   private ArrayList<Long> scoreList;
 
@@ -62,7 +62,7 @@ public class HighscoreState extends BasicGameState{
     width = gc.getWidth();
     headerSpace = gc.getHeight()/11;
     textSpace = (gc.getHeight() - (2 * headerSpace))/22; // divided by 11 to get all the spaces then by 2 to get fontsize
-    textWidth = new int[nameList.size()];
+    scoreWidth = new int[scoreList.size()];
     menu = new String[] {"Zurück", "Scores löschen"};
 
     textFont = new SimpleFont("Arial", Font.PLAIN, textSpace, java.awt.Color.lightGray);
@@ -74,9 +74,8 @@ public class HighscoreState extends BasicGameState{
     menuY = gc.getHeight() - 10 - menuFont.get().getHeight(menu[0]);
 
     int i = 0;
-    for(String name : nameList){ //most of the time we only need half the width
-      textWidth[i] = textFont.get().getWidth(Integer.toString(i+1) + 
-          ". " + name + ": " + Long.toString(scoreList.get(i)))/2;
+    for(long score : scoreList){
+      scoreWidth[i] = textFont.get().getWidth(Long.toString(score));
       i++;
     }
   }
@@ -87,10 +86,12 @@ public class HighscoreState extends BasicGameState{
     int y = 2 * headerSpace;
     
     headerFont.get().drawString(width/2 - headerWidth, 0, "High Scores");
-    
+
     for(String name : nameList){
-      textFont.get().drawString(width/2 - textWidth[i], y, Integer.toString(i+1) + 
-          ". " + name + ": " + Long.toString(scoreList.get(i)));
+      textFont.get().drawString(5, y, Integer.toString(i+1) + ". " + name);
+      textFont.get().drawString(width - 5 - scoreWidth[i], y, Long.toString(scoreList.get(i)));
+      g.setColor(Color.lightGray);
+      g.drawLine(0, y + (textSpace * 2), width, y + (textSpace * 2)); //we want to draw under not above the High Score
       i++;
       y += textSpace * 2;
     }
