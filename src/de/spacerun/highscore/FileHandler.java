@@ -59,20 +59,14 @@ public class FileHandler {
     ArrayList<String> nameList = getHighscoreNames();
     ArrayList<Long> scoreList = getHighscoreScore();
     boolean first = true;
-    int i = 0;
 
     deleteHighscore();
-    for(long tmpScore : scoreList){
-      if(i >= 9){
-        break;
-      }
-      if( (score > tmpScore) && first){
+    for(int i = 0; i < 10; i++){
+      if( (score > scoreList.get(i)) && first){
         write(name + SEPARATOR + Long.toString(score));
         first = false;
       } 
-      write(nameList.get(i) + SEPARATOR + Long.toString(tmpScore)); 
-
-      i++;
+      write(nameList.get(i) + SEPARATOR + Long.toString(scoreList.get(i))); 
     }
   }
 
