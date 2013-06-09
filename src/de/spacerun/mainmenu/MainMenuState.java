@@ -26,6 +26,7 @@ import java.awt.Font;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
@@ -41,6 +42,7 @@ public class MainMenuState extends BasicGameState {
   private int[] menuWidth;
   private String[] menuText;
   private int stateID;
+  private Image image;
   
   public MainMenuState(int ID) {
   	this.stateID = ID;
@@ -63,12 +65,15 @@ public class MainMenuState extends BasicGameState {
     for(int i = 0; i < menuText.length; i++){
       menuWidth[i] = menuFont.get().getWidth(menuText[i])/2;
     }
+    
+    image = new Image("data/Universe 2.0.png");
   }
  
   @Override
   public void render(GameContainer gc, StateBasedGame sbg, Graphics g) {
     float start = 2 * headerSpace;
     
+    image.draw(0,0,gc.getWidth(),gc.getHeight());
     headerFont.get().drawString(width/2 - headerWidth, 0, "Spacerun");
 
     for(int i = 0; i < menuText.length; i++){

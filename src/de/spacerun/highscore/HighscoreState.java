@@ -65,7 +65,7 @@ public class HighscoreState extends BasicGameState{
     headerSpace = gc.getHeight()/11;
     textSpace = (gc.getHeight() - (2 * headerSpace))/22; // divided by 11 to get all the spaces then by 2 to get fontsize
     scoreWidth = new int[scoreList.size()];
-    menu = new String[] {"ZurÃ¼ck", "Scores lÃ¶schen"};
+    menu = new String[] {"Zurück", "Scores löschen"};
 
     textFont = new SimpleFont("Arial", Font.PLAIN, textSpace, java.awt.Color.lightGray);
     headerFont = new SimpleFont("Arial", Font.PLAIN, headerSpace);
