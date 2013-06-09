@@ -75,7 +75,7 @@ public class GameState extends BasicGameState {
 		width = gc.getWidth();
 		height = gc.getHeight();
 		
-		playerSpeed = 0.55f;
+		playerSpeed = (float) width/3491; //0.55f @ 1080p
 		int playerHeight = gc.getHeight()/22;
 		int playerWidth = gc.getWidth()/96;
 		playerRec = new Rectangle(width/2 - playerWidth/2, height - playerHeight, playerWidth, playerHeight);		
@@ -85,7 +85,7 @@ public class GameState extends BasicGameState {
 		score = 0;
 		startTime = System.currentTimeMillis(); //The Highscore is time based
 		
-		obstacleSpeed = 0.01f;
+		obstacleSpeed = (float) height/108000; //0.01f @ 1080p
 		obstacleGap = height / 4;
 		sectorWidth = width / 10;
 		obstacles = new ArrayDeque<ObstacleRow>();
@@ -162,7 +162,7 @@ public class GameState extends BasicGameState {
 			}
 			if(input.isKeyDown(Input.KEY_RIGHT)){
 				if((playerRec.getX() + playerRec.getWidth()) < width){
-					playerRec.setX(playerRec.getX() + playerSpeed * delta);
+				  playerRec.setX(playerRec.getX() + playerSpeed * delta);
 				}
 			}
 		
@@ -188,7 +188,7 @@ public class GameState extends BasicGameState {
 			score = (System.currentTimeMillis() - startTime) / 100;
 			if(score >= speedStep){
 				speedStep += 100;
-				obstacleSpeed += 0.002f;
+				obstacleSpeed += ((float) height/540000);//0.002f @ 1080p
 			}
 		}else{
 			if(enteredName){
