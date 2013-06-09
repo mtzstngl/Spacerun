@@ -1,5 +1,5 @@
 /*
-* Copyright (c) <2013> <Matthias Stangl>
+* Copyright (c) <2013> <Matthias Stangl> <Marco Britzl>
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
 */
 package de.spacerun.highscore;
 
-import java.awt.Font;
 import java.util.ArrayList;
 
 import org.newdawn.slick.Color;
@@ -65,11 +64,11 @@ public class HighscoreState extends BasicGameState{
     headerSpace = gc.getHeight()/11;
     textSpace = (gc.getHeight() - (2 * headerSpace))/22; // divided by 11 to get all the spaces then by 2 to get fontsize
     scoreWidth = new int[scoreList.size()];
-    menu = new String[] {"ZurÃ¼ck", "Scores lÃ¶schen"};
+    menu = new String[] {"Zurück", "Scores löschen"};
 
-    textFont = new SimpleFont("Arial", Font.PLAIN, textSpace, java.awt.Color.lightGray);
-    headerFont = new SimpleFont("Arial", Font.PLAIN, headerSpace);
-    menuFont = new SimpleFont("Arial", Font.PLAIN, textSpace/2);
+    textFont = new SimpleFont("data/space age.ttf", textSpace, java.awt.Color.lightGray);
+    headerFont = new SimpleFont("data/space age.ttf", headerSpace);
+    menuFont = new SimpleFont("data/space age.ttf", textSpace/2);
 
     headerWidth = headerFont.get().getWidth("High Scores")/2;
     menuX = width - 10 - menuFont.get().getWidth(menu[1]);
