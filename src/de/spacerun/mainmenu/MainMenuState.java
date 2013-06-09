@@ -1,5 +1,5 @@
 /*
-* Copyright (c) <2013> <Matthias Stangl>
+* Copyright (c) <2013> <Matthias Stangl> <Marco Britzl>
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -20,8 +20,6 @@
 * THE SOFTWARE.
 */
 package de.spacerun.mainmenu;
-
-import java.awt.Font;
 
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
@@ -57,8 +55,8 @@ public class MainMenuState extends BasicGameState {
     headerSpace = gc.getHeight()/(menuText.length + 1);
     menuSpace = (gc.getHeight() - (2 * headerSpace))/((menuText.length + 1) * 2);
     
-    menuFont = new SimpleFont("Arial", Font.PLAIN, menuSpace/2, java.awt.Color.lightGray);
-    headerFont = new SimpleFont("Arial", Font.PLAIN, headerSpace);
+    menuFont = new SimpleFont("data/space age.ttf", menuSpace/2);
+    headerFont = new SimpleFont("data/space age.ttf", headerSpace);
     
     headerWidth = headerFont.get().getWidth("Spacerun")/2;
     menuWidth = new int[menuText.length];
