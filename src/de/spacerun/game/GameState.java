@@ -1,5 +1,5 @@
 /*
-* Copyright (c) <2013> <Matthias Stangl>
+* Copyright (c) <2013> <Matthias Stangl> <Marco Britzl>
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -21,7 +21,6 @@
 */
 package de.spacerun.game;
 
-import java.awt.Font;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -71,7 +70,7 @@ public class GameState extends BasicGameState {
 	
 	@Override
 	public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
-		font = new SimpleFont("Arial", Font.PLAIN, gc.getHeight()/54);
+		font = new SimpleFont("data/space age.ttf", gc.getHeight()/54);
 		width = gc.getWidth();
 		height = gc.getHeight();
 		
