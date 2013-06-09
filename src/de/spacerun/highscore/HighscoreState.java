@@ -31,6 +31,8 @@ import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 import de.spacerun.main.Spacerun;
 import de.spacerun.mainmenu.SimpleFont;
@@ -121,15 +123,15 @@ public class HighscoreState extends BasicGameState{
       if(selection){
         fHandler.deleteHighscore();
         sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg); //we need to update the screen; the easiest way
-        sbg.enterState(Spacerun.HIGHSCORESTATE);
+        sbg.enterState(Spacerun.HIGHSCORESTATE, new FadeOutTransition(), new FadeInTransition());
       }else{
         sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
-        sbg.enterState(Spacerun.MAINMENUSTATE);
+        sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
       }
     }
     if(input.isKeyPressed(Input.KEY_ESCAPE)){
       sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
-      sbg.enterState(Spacerun.MAINMENUSTATE);
+      sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
     }
   }
 

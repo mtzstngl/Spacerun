@@ -23,13 +23,14 @@ package de.spacerun.mainmenu;
 
 import java.awt.Font;
 
+import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
 import org.newdawn.slick.Input;
-import org.newdawn.slick.Color;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.VerticalSplitTransition;
 
 import de.spacerun.main.Spacerun;
 
@@ -96,16 +97,16 @@ public class MainMenuState extends BasicGameState {
     }else if(input.isKeyPressed(Input.KEY_ENTER)){
   	  if(menuText[index] == "Spiel starten"){
   		  sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
-  		  sbg.enterState(Spacerun.GAMESTATE);
+  		  sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
     	}else if(menuText[index] == "Multiplayer"){
     	  //sbg.getState(Spacerun.MULTIPLAYERSTATE).init(gc, sbg);
-  		  //sbg.enterState(Spacerun.MULTIPLAYERSTATE);
+  		  //sbg.enterState(Spacerun.MULTIPLAYERSTATE), null, new VerticalSplitTransition();
   	  }else if(menuText[index] == "Highscores"){
   	    sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg);
-    	  sbg.enterState(Spacerun.HIGHSCORESTATE);
+    	  sbg.enterState(Spacerun.HIGHSCORESTATE, null, new VerticalSplitTransition());
       }else if(menuText[index] == "Steuerung"){
   		  //sbg.getState(Spacerun.CONTROLSTATE).init(gc, sbg);
-  		  //sbg.enterState(Spacerun.CONTROLSTATE);
+  		  //sbg.enterState(Spacerun.CONTROLSTATE), null, new VerticalSplitTransition();
   		}else if(menuText[index] == "Exit"){
     	  gc.exit();
   	  }   

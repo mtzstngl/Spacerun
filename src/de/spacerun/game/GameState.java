@@ -34,6 +34,8 @@ import org.newdawn.slick.geom.Rectangle;
 import org.newdawn.slick.gui.TextField;
 import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
+import org.newdawn.slick.state.transition.FadeInTransition;
+import org.newdawn.slick.state.transition.FadeOutTransition;
 
 import de.spacerun.highscore.FileHandler;
 import de.spacerun.main.Spacerun;
@@ -148,7 +150,7 @@ public class GameState extends BasicGameState {
 		//exiting gamestate
 		if(input.isKeyPressed(Input.KEY_ESCAPE)){
 			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
-			sbg.enterState(Spacerun.MAINMENUSTATE);
+			sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
 		}
 		
 		//moving player
@@ -201,10 +203,10 @@ public class GameState extends BasicGameState {
 		    }else if(input.isKeyPressed(Input.KEY_ENTER)){
         	if(selection){
         	  sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
-		    		sbg.enterState(Spacerun.MAINMENUSTATE);
+		    		sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
 		    	}else{
         		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
-        		sbg.enterState(Spacerun.GAMESTATE);
+        		sbg.enterState(Spacerun.GAMESTATE, new FadeOutTransition(), new FadeInTransition());
 		    	}
 		    }
 			}else{
