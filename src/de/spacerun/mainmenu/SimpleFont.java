@@ -1,5 +1,5 @@
 /*
-* Copyright (c) <2013> <Matthias Stangl>
+* Copyright (c) <2013> <Matthias Stangl> <Marco Britzl>
 *
 * Permission is hereby granted, free of charge, to any person obtaining a copy
 * of this software and associated documentation files (the "Software"), to deal
@@ -37,6 +37,22 @@ public class SimpleFont {
 		ufont.getEffects().add(new ColorEffect(color));
 		ufont.addAsciiGlyphs();
 		ufont.loadGlyphs();
+	}
+	
+	@SuppressWarnings("unchecked") //nothing we can do about this warning because it is a problem of Slick2D
+	public SimpleFont(String name, int size, Color color){
+		try {
+			ufont = new UnicodeFont(name, size, false, false);
+			ufont.getEffects().add(new ColorEffect(color));
+			ufont.addAsciiGlyphs();
+			ufont.loadGlyphs();
+		} catch (SlickException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public SimpleFont(String name, int size){
+		this(name, size, Color.white);
 	}
 	
 	public SimpleFont(Font font) throws SlickException {
