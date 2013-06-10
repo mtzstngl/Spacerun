@@ -223,4 +223,80 @@ public class GameState extends BasicGameState {
 	public int getID() {
 		return stateID;
 	}
+	public void update2(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
+		Input input = gc.getInput();
+		
+		//exiting gamestate
+		if(input.isKeyPressed(Input.KEY_ESCAPE)){
+			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+			sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+		}
+		
+		//moving player
+		if(notHit){
+			if(input.isKeyDown(Input.KEY_A)){
+				if(playerRec.getX() > 0){ //delta is to make sure we travel the same way each render/frame
+					playerRec.setX(playerRec.getX() - playerSpeed * delta);
+				}
+			}
+			if(input.isKeyDown(Input.KEY_D)){
+				if((playerRec.getX() + playerRec.getWidth()) < width){
+				  playerRec.setX(playerRec.getX() + playerSpeed * delta);
+				}
+			}
+		
+			//generating, moving, hitting obstacles
+			if(!obstacles.isEmpty()){
+				if((obstacles.getLast().getPosition() - obstacleGap) >= 0){
+					obstacles.add(new ObstacleRow(sectorWidth, 10, -40));
+				}
+				for(ObstacleRow i : obstacles){
+					i.setPosition(obstacleSpeed * delta);
+					if(i.intersects(playerRec)){
+						notHit = false;
+					}
+					if(i.getPosition() >= height){
+						obstacles.remove(i);
+					}
+				}
+			}else{
+				obstacles.add(new ObstacleRow(sectorWidth, 10, -40));
+			}
+		
+			//highscore handling
+			score = (System.currentTimeMillis() - startTime) / 100;
+			if(score >= speedStep){
+				speedStep += 100;
+				obstacleSpeed += ((float) height/540000);//0.002f @ 1080p
+			}
+		}else{
+			if(enteredName){
+				if(input.isKeyPressed(Input.KEY_D)){
+		      if(!selection){
+		    		selection = true;
+	      	}
+	      }else if(input.isKeyPressed(Input.KEY_A)){
+		    	if(selection){
+		    	  selection = false;
+		    	}
+		    }else if(input.isKeyPressed(Input.KEY_ENTER)){
+        	if(selection){
+        	  sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+		    		sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+		    	}else{
+        		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+        		sbg.enterState(Spacerun.GAMESTATE, new FadeOutTransition(), new FadeInTransition());
+		    	}
+		    }
+			}else{
+				if(input.isKeyPressed(Input.KEY_ENTER)){
+					new FileHandler().writeHighscore(nameField.getText(), score);
+					nameField.setFocus(false);
+					nameField.setAcceptingInput(false);
+					enteredName = true;
+				}
+			}
+		}
+	}
 }
+

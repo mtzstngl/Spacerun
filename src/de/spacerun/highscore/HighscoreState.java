@@ -138,4 +138,32 @@ public class HighscoreState extends BasicGameState{
   public int getID(){
     return stateID;
   }
-}
+
+  public void update3(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException{
+    Input input = gc.getInput();
+
+    if(input.isKeyPressed(Input.KEY_A)){
+      if(selection){
+        selection = false;
+      }
+    }else if(input.isKeyPressed(Input.KEY_D)){
+      if(!selection){
+        selection = true; 
+      }
+    }else if(input.isKeyPressed(Input.KEY_ENTER)){
+      if(selection){
+        fHandler.deleteHighscore();
+        sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg); //we need to update the screen; the easiest way
+        sbg.enterState(Spacerun.HIGHSCORESTATE, new FadeOutTransition(), new FadeInTransition());
+      }else{
+        sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+        sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+      }
+    }
+    if(input.isKeyPressed(Input.KEY_ESCAPE)){
+      sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+      sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+    }
+  }
+
+  }
