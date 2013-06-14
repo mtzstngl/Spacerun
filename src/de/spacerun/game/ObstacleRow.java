@@ -43,8 +43,8 @@ public class ObstacleRow {
 	}
 	
 	public void setPosition(float pos){
+		position += pos;
 		for(int i = 0; i < sectorCount; i++){
-			position += pos;
 			obstacle[i].setY(position);
 		}
 	}

@@ -84,7 +84,7 @@ public class GameState extends BasicGameState {
 		score = 0;
 		startTime = System.currentTimeMillis(); //The Highscore is time based
 		
-		obstacleSpeed = (float) height/108000; //0.01f @ 1080p
+		obstacleSpeed = (float) height/10800; //0.01f @ 1080p
 		obstacleGap = height / 4;
 		sectorWidth = width / 10;
 		obstacles = new ArrayDeque<ObstacleRow>();
@@ -187,7 +187,7 @@ public class GameState extends BasicGameState {
 			score = (System.currentTimeMillis() - startTime) / 100;
 			if(score >= speedStep){
 				speedStep += 100;
-				obstacleSpeed += ((float) height/540000);//0.002f @ 1080p
+				obstacleSpeed += ((float) height/54000);//0.002f @ 1080p
 			}
 		}else{
 			if(enteredName){
