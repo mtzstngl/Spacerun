@@ -64,6 +64,8 @@ public class GameState extends BasicGameState {
 	private int[] menuX;
 	private int[] menuY;
 
+	private StarBackground stars;
+
 	public GameState(int ID){
 		this.stateID = ID;
 	}
@@ -105,10 +107,15 @@ public class GameState extends BasicGameState {
     menuX[1] = nameField.getX() + nameField.getWidth() + 10;
     menuY[0] = nameField.getY() + font.get().getHeight(menu[0]) + 10;
     menuY[1] = nameField.getY() + font.get().getHeight(menu[1]) + 10;
+
+    stars = new StarBackground(gc.getWidth(), gc.getHeight(), 500);
 	}
 
 	@Override
 	public void render(GameContainer gc, StateBasedGame sbg, Graphics g) throws SlickException {
+		//Background rendering
+		stars.render();
+		
 		//Game rendering
 		g.setColor(Color.gray);
 		g.fillRect(playerRec.getX(), playerRec.getY(), playerRec.getWidth(), playerRec.getHeight());
@@ -157,13 +164,18 @@ public class GameState extends BasicGameState {
 			if(input.isKeyDown(Input.KEY_LEFT)){
 				if(playerRec.getX() > 0){ //delta is to make sure we travel the same way each render/frame
 					playerRec.setX(playerRec.getX() - playerSpeed * delta);
+					stars.adjustPosition(playerSpeed * delta, 0);
 				}
 			}
 			if(input.isKeyDown(Input.KEY_RIGHT)){
 				if((playerRec.getX() + playerRec.getWidth()) < width){
 				  playerRec.setX(playerRec.getX() + playerSpeed * delta);
+				  stars.adjustPosition(-playerSpeed * delta, 0);
 				}
 			}
+
+			//move ALL the stars
+			stars.adjustPosition(0, obstacleSpeed * delta * 2);
 		
 			//generating, moving, hitting obstacles
 			if(!obstacles.isEmpty()){

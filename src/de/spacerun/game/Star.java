@@ -22,57 +22,49 @@
 package de.spacerun.game;
 
 import org.newdawn.slick.Color;
-import org.newdawn.slick.opengl.TextureImpl;
-import org.newdawn.slick.opengl.renderer.Renderer;
-import org.newdawn.slick.opengl.renderer.SGL;
 
 public class Star{
-  private int x;
-  private int y;
-  private float size;
-  private SGL gl = Renderer.get();
+  private float x;
+  private float y;
   private Color color;
 
-  public Star(int x, int y, float size){
-    this(x, y, size, Color.white);
+  public Star(float x, float y){
+    this(x, y, Color.white);
   }
 
-  public Star(int x, int y, float size, Color color){
+  public Star(float x, float y, Color color){
     this.x = x;
     this.y = y;
-    this.size = size;
     this.color = color;
-  }
-
-  public void render(){
-    TextureImpl.bindNone();
-    gl.glEnable(SGL.GL_POINT_SMOOTH);
-    gl.glPointSize(size/2);
-    color.bind();
-    gl.glBegin(SGL.GL_POINTS);
-    gl.glVertex2f(x, y);
-    gl.glEnd();
   }
 
   public void setColor(Color color){
     this.color = color;
   }
 
-  public void adjustSize(float size){
-    this.size += size;
-  }
-  
-  public void setSize(float size){
-    this.size = size;
+  public void setColor(float r, float g, float b, float a){
+    color = new Color(r, g, b, a);
   }
 
-  public void adjustPosition(int x, int y){
+  public void adjustPosition(float x, float y){
     this.x += x;
     this.y += y;
   }
 
-  public void setPosition(int x, int y){
+  public void setPosition(float x, float y){
     this.x = x;
     this.y = y;
+  }
+
+  public float getX(){
+    return x;
+  }
+
+  public float getY(){
+    return y;
+  }
+
+  public Color getColor(){
+    return color;
   }
 }

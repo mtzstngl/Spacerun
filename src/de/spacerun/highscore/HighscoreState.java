@@ -33,6 +33,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
+import de.spacerun.game.StarBackground;
 import de.spacerun.main.Spacerun;
 import de.spacerun.mainmenu.SimpleFont;
 
@@ -47,6 +48,7 @@ public class HighscoreState extends BasicGameState{
   private int[] scoreWidth;
   private ArrayList<String> nameList;
   private ArrayList<Long> scoreList;
+  private StarBackground stars;
 
 	public HighscoreState(int ID){
 	  this.stateID = ID;
@@ -79,6 +81,8 @@ public class HighscoreState extends BasicGameState{
       scoreWidth[i] = textFont.get().getWidth(Long.toString(score));
       i++;
     }
+
+    stars = new StarBackground(gc.getWidth(), gc.getHeight(), 500);
   }
   
   @Override
@@ -86,6 +90,10 @@ public class HighscoreState extends BasicGameState{
     int i = 0;
     int y = 2 * headerSpace;
     
+    //star rendering
+    stars.render();
+
+    //Header and score rendering
     headerFont.get().drawString(width/2 - headerWidth, 0, "High Scores");
 
     for(String name : nameList){
