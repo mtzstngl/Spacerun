@@ -122,7 +122,7 @@ public class GameState extends BasicGameState {
     menuY[0] = nameField.getY() + font.get().getHeight(menu[0]) + 10;
     menuY[1] = nameField.getY() + font.get().getHeight(menu[1]) + 10;
 
-    stars = new StarBackground(gc.getWidth(), gc.getHeight(), 500);
+    stars = new StarBackground(gc.getWidth(), gc.getHeight(), (int)(gc.getHeight() * gc.getWidth() / 4147));
 	}
 
 	@Override

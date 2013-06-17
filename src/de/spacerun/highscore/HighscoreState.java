@@ -82,7 +82,7 @@ public class HighscoreState extends BasicGameState{
       i++;
     }
 
-    stars = new StarBackground(gc.getWidth(), gc.getHeight(), 500);
+    stars = new StarBackground(gc.getWidth(), gc.getHeight(), (int)(gc.getHeight() * gc.getWidth() / 4147));
   }
   
   @Override
