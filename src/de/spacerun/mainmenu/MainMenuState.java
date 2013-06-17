@@ -31,6 +31,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.VerticalSplitTransition;
 
+import de.spacerun.main.Data;
 import de.spacerun.main.Spacerun;
 
 public class MainMenuState extends BasicGameState {
@@ -41,9 +42,12 @@ public class MainMenuState extends BasicGameState {
   private String[] menuText;
   private int stateID;
   private Image image;
+
+  private Data data;
   
-  public MainMenuState(int ID) {
+  public MainMenuState(int ID, Data d) {
   	this.stateID = ID;
+  	data = d;
   }
 
   @Override
@@ -64,7 +68,7 @@ public class MainMenuState extends BasicGameState {
       menuWidth[i] = menuFont.get().getWidth(menuText[i])/2;
     }
     
-    image = new Image("data/Universe 2.0.png");
+    image = new Image("data/Universe.png");
   }
  
   @Override
@@ -102,6 +106,9 @@ public class MainMenuState extends BasicGameState {
   		  sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
   		  sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
     	}else if(menuText[index] == "Multiplayer"){
+    	  data.setData(true);
+  		  sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+  		  sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
     	  //sbg.getState(Spacerun.MULTIPLAYERSTATE).init(gc, sbg);
   		  //sbg.enterState(Spacerun.MULTIPLAYERSTATE), null, new VerticalSplitTransition();
   	  }else if(menuText[index] == "Highscores"){

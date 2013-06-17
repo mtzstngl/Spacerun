@@ -37,6 +37,7 @@ import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
 import de.spacerun.highscore.FileHandler;
+import de.spacerun.main.Data;
 import de.spacerun.main.Spacerun;
 import de.spacerun.mainmenu.SimpleFont;
 
@@ -46,10 +47,17 @@ public class GameState extends BasicGameState {
 	private int width, height;
 	private SimpleFont font;
 	
-	private Rectangle playerRec;
+	private SimpleFont multiplayerFont;
+	private String[] multiplayerMenu;
+	private Data data;
+	private boolean multiplayer;
+
+	private Rectangle playerOne;
+	private Rectangle playerTwo;
 	private float playerSpeed;
 	
 	private boolean notHit;
+	private String gameoverMessage;
 	private long startTime;
 	private long score;
 	private long speedStep;
@@ -66,8 +74,9 @@ public class GameState extends BasicGameState {
 
 	private StarBackground stars;
 
-	public GameState(int ID){
+	public GameState(int ID, Data d){
 		this.stateID = ID;
+		data = d;
 	}
 	
 	@Override
@@ -76,10 +85,15 @@ public class GameState extends BasicGameState {
 		width = gc.getWidth();
 		height = gc.getHeight();
 		
+    multiplayerFont = new SimpleFont("data/space age.ttf", gc.getHeight()/25);
+		multiplayerMenu = new String[] {"Spieler 1 hat gewonnen!", "Spieler 2 hat gewonnen!", "Unentschieden!"};
+		multiplayer = data.getData();
+
 		playerSpeed = (float) width/3491; //0.55f @ 1080p
 		int playerHeight = gc.getHeight()/22;
 		int playerWidth = gc.getWidth()/96;
-		playerRec = new Rectangle(width/2 - playerWidth/2, height - playerHeight, playerWidth, playerHeight);		
+		playerOne = new Rectangle(width/2 + playerWidth/2, height - playerHeight, playerWidth, playerHeight);
+		playerTwo = new Rectangle(width/2 - playerWidth, height - playerHeight, playerWidth, playerHeight);
 		
 		notHit = true;
 		speedStep = 100;
@@ -100,7 +114,7 @@ public class GameState extends BasicGameState {
 		selection = false; //true is right; false is left
 		enteredName = false;
 		
-		menu = new String[] {"Nochmal", "Abbrechen"};
+    menu = new String[] {"Nochmal", "Abbrechen"};
     menuX = new int[2];
     menuY = new int[2];
     menuX[0] = nameField.getX() - font.get().getWidth(menu[0]) - 10;
@@ -117,10 +131,18 @@ public class GameState extends BasicGameState {
 		stars.render();
 		
 		//Game rendering
+		//playerOne
 		g.setColor(Color.gray);
-		g.fillRect(playerRec.getX(), playerRec.getY(), playerRec.getWidth(), playerRec.getHeight());
-		g.draw(playerRec);
-		
+		g.fillRect(playerOne.getX(), playerOne.getY(), playerOne.getWidth(), playerOne.getHeight());
+		g.draw(playerOne);
+    
+    if(multiplayer){
+      //playerTwo
+		  g.setColor(Color.blue);
+		  g.fillRect(playerTwo.getX(), playerTwo.getY(), playerTwo.getWidth(), playerTwo.getHeight());
+		  g.draw(playerTwo);
+    }
+
 		if(!obstacles.isEmpty()){
 			for(ObstacleRow i : obstacles){
 				i.draw(g, Color.green);
@@ -133,7 +155,7 @@ public class GameState extends BasicGameState {
 		font.get().drawString(width - tmpWidth - tmpHeight, 0, Long.toString(score));
 		
 		//TextField rendering
-		if(!notHit){
+		if((!notHit) && (!multiplayer)){
 			g.setColor(Color.red); //Otherwise it would be green 
 			g.drawRect(nameField.getX(), nameField.getY(), nameField.getWidth(), nameField.getHeight());
 			    //Otherwise it would only show half of the frame
@@ -147,6 +169,26 @@ public class GameState extends BasicGameState {
 			  font.get().drawString(menuX[1], menuY[1], menu[1], Color.white);
 			}
 		}
+
+    //calculations cannot be moved to init because the length of gameoverMessage varies
+		if((!notHit) && multiplayer){
+      int multiWidth, multiHeight, multiX, multiY, multiMenuWidth;
+
+      multiMenuWidth = font.get().getWidth(menu[0]);
+      multiWidth = multiplayerFont.get().getWidth(gameoverMessage);
+      multiHeight = multiplayerFont.get().getHeight(gameoverMessage);
+      multiX = width/2 - multiWidth/2;
+      multiY = height/2 - multiHeight/2;
+      multiplayerFont.get().drawString(multiX, multiY, gameoverMessage, Color.white);
+
+			if(selection){
+			  font.get().drawString(multiX - multiMenuWidth, multiY + multiHeight, menu[0], Color.white);
+			  font.get().drawString(multiX + multiWidth, multiY + multiHeight, menu[1], Color.red);
+			}else{
+			  font.get().drawString(multiX - multiMenuWidth, multiY + multiHeight, menu[0], Color.red);
+			  font.get().drawString(multiX + multiWidth, multiY + multiHeight, menu[1], Color.white);
+			}
+    }
 	}
 
 	@Override
@@ -155,25 +197,15 @@ public class GameState extends BasicGameState {
 		
 		//exiting gamestate
 		if(input.isKeyPressed(Input.KEY_ESCAPE)){
+		  data.setData(false);
 			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
 			sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
 		}
 		
-		//moving player
 		if(notHit){
-			if(input.isKeyDown(Input.KEY_LEFT)){
-				if(playerRec.getX() > 0){ //delta is to make sure we travel the same way each render/frame
-					playerRec.setX(playerRec.getX() - playerSpeed * delta);
-					stars.adjustPosition(playerSpeed * delta, 0);
-				}
-			}
-			if(input.isKeyDown(Input.KEY_RIGHT)){
-				if((playerRec.getX() + playerRec.getWidth()) < width){
-				  playerRec.setX(playerRec.getX() + playerSpeed * delta);
-				  stars.adjustPosition(-playerSpeed * delta, 0);
-				}
-			}
-
+			//move ALL the players
+			playerMovement(input, delta);
+			
 			//move ALL the stars
 			stars.adjustPosition(0, obstacleSpeed * delta * 2);
 		
@@ -184,9 +216,22 @@ public class GameState extends BasicGameState {
 				}
 				for(ObstacleRow i : obstacles){
 					i.setPosition(obstacleSpeed * delta);
-					if(i.intersects(playerRec)){
+
+					//check if one of the players is hit
+					if(i.intersects(playerOne)){
 						notHit = false;
+						gameoverMessage = multiplayerMenu[1];
 					}
+          if(i.intersects(playerTwo) && multiplayer){
+						notHit = false;
+						if(gameoverMessage == multiplayerMenu[1]){
+						  gameoverMessage = multiplayerMenu[2];
+						}else{
+              gameoverMessage = multiplayerMenu[0];
+						}
+					}
+
+					//remove unused obstacles
 					if(i.getPosition() >= height){
 						obstacles.remove(i);
 					}
@@ -202,31 +247,92 @@ public class GameState extends BasicGameState {
 				obstacleSpeed += ((float) height/54000);//0.002f @ 1080p
 			}
 		}else{
-			if(enteredName){
-				if(input.isKeyPressed(Input.KEY_RIGHT)){
-		      if(!selection){
-		    		selection = true;
-	      	}
-	      }else if(input.isKeyPressed(Input.KEY_LEFT)){
-		    	if(selection){
-		    	  selection = false;
-		    	}
-		    }else if(input.isKeyPressed(Input.KEY_ENTER)){
-        	if(selection){
-        	  sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
-		    		sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
-		    	}else{
-        		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
-        		sbg.enterState(Spacerun.GAMESTATE, new FadeOutTransition(), new FadeInTransition());
-		    	}
-		    }
-			}else{
-				if(input.isKeyPressed(Input.KEY_ENTER)){
-					new FileHandler().writeHighscore(nameField.getText(), score);
-					nameField.setFocus(false);
-					nameField.setAcceptingInput(false);
-					enteredName = true;
+		  if(multiplayer){
+		    gameoverInput(gc, sbg, input);
+      }else{
+        nameInput(gc, sbg, input);
+      }
+    }
+	}
+
+  private void gameoverInput(GameContainer gc, StateBasedGame sbg, Input input) throws SlickException {
+    if(input.isKeyPressed(Input.KEY_RIGHT)){
+	    if(!selection){
+        selection = true;
+      }
+	  }else if(input.isKeyPressed(Input.KEY_LEFT)){
+	  	if(selection){
+    	  selection = false;
+    	}
+	  }else if(input.isKeyPressed(Input.KEY_ENTER)){
+    	if(selection){
+    	  data.setData(false);
+    	  sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+    	  sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+	    }else{
+    		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+    		sbg.enterState(Spacerun.GAMESTATE, new FadeOutTransition(), new FadeInTransition());
+    	}
+    }
+	}
+
+	private void playerMovement(Input input, int delta){
+		//moving playerOne
+		if(input.isKeyDown(Input.KEY_LEFT)){
+			if(playerOne.getX() > 0){ //delta is to make sure we travel the same way each render/frame
+			  playerOne.setX(playerOne.getX() - playerSpeed * delta);
+				stars.adjustPosition(playerSpeed * delta, 0);
+			}
+		}
+		if(input.isKeyDown(Input.KEY_RIGHT)){
+		  if((playerOne.getX() + playerOne.getWidth()) < width){
+				playerOne.setX(playerOne.getX() + playerSpeed * delta);
+			  stars.adjustPosition(-playerSpeed * delta, 0);
+			}
+		}
+      
+    if(multiplayer){
+		  //moving playerTwo
+			if(input.isKeyDown(Input.KEY_A)){
+				if(playerTwo.getX() > 0){ //delta is to make sure we travel the same way each render/frame
+					playerTwo.setX(playerTwo.getX() - playerSpeed * delta);
+					stars.adjustPosition(playerSpeed * delta, 0);
 				}
+			}
+			if(input.isKeyDown(Input.KEY_D)){
+				if((playerTwo.getX() + playerTwo.getWidth()) < width){
+				  playerTwo.setX(playerTwo.getX() + playerSpeed * delta);
+				  stars.adjustPosition(-playerSpeed * delta, 0);
+				}
+			}
+    }
+	}
+
+  private void nameInput(GameContainer gc, StateBasedGame sbg, Input input) throws SlickException{
+		if(enteredName){
+			if(input.isKeyPressed(Input.KEY_RIGHT)){
+	      if(!selection){
+	        selection = true;
+	      }
+	    }else if(input.isKeyPressed(Input.KEY_LEFT)){
+		  	if(selection){
+	    	  selection = false;
+	    	}
+	    }else if(input.isKeyPressed(Input.KEY_ENTER)){
+      	if(selection){
+      	  sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+	    		sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+	    	}else{
+      		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+      		sbg.enterState(Spacerun.GAMESTATE, new FadeOutTransition(), new FadeInTransition());
+	    	}
+	    }
+	  }else{
+			if(input.isKeyPressed(Input.KEY_ENTER)){
+				new FileHandler().writeHighscore(nameField.getText(), score);
+				nameField.setFocus(false);
+				nameField.setAcceptingInput(false);
+				enteredName = true;
 			}
 		}
 	}
