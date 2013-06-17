@@ -109,8 +109,6 @@ public class MainMenuState extends BasicGameState {
     	  data.setData(true);
   		  sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
   		  sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
-    	  //sbg.getState(Spacerun.MULTIPLAYERSTATE).init(gc, sbg);
-  		  //sbg.enterState(Spacerun.MULTIPLAYERSTATE), null, new VerticalSplitTransition();
   	  }else if(menuText[index] == "Highscores"){
   	    sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg);
     	  sbg.enterState(Spacerun.HIGHSCORESTATE, null, new VerticalSplitTransition());
