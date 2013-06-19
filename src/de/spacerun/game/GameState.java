@@ -224,7 +224,7 @@ public class GameState extends BasicGameState {
 					}
           if(i.intersects(playerTwo) && multiplayer){
 						notHit = false;
-						if(gameoverMessage == multiplayerMenu[1]){
+						if(i.intersects(playerOne)){
 						  gameoverMessage = multiplayerMenu[2];
 						}else{
               gameoverMessage = multiplayerMenu[0];
