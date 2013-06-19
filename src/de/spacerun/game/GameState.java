@@ -279,31 +279,45 @@ public class GameState extends BasicGameState {
 	private void playerMovement(Input input, int delta){
 		//moving playerOne
 		if(input.isKeyDown(Input.KEY_LEFT)){
-			if(playerOne.getX() > 0){ //delta is to make sure we travel the same way each render/frame
+			//delta is to make sure we travel the same way each render/frame
+			if((playerOne.getX() - playerSpeed * delta) > 0){ 
 			  playerOne.setX(playerOne.getX() - playerSpeed * delta);
 				stars.adjustPosition(playerSpeed * delta, 0);
+			}else{
+			  stars.adjustPosition(playerOne.getX(), 0);
+			  playerOne.setX(0);
 			}
 		}
 		if(input.isKeyDown(Input.KEY_RIGHT)){
-		  if((playerOne.getX() + playerOne.getWidth()) < width){
+		  if( (playerOne.getX() + playerSpeed * delta) < (width - playerOne.getWidth()) ){
 				playerOne.setX(playerOne.getX() + playerSpeed * delta);
 			  stars.adjustPosition(-playerSpeed * delta, 0);
+			}else{
+			  stars.adjustPosition(-(width - playerOne.getX() - playerOne.getWidth()), 0);
+			  playerOne.setX(width - playerOne.getWidth());
 			}
 		}
       
     if(multiplayer){
 		  //moving playerTwo
 			if(input.isKeyDown(Input.KEY_A)){
-				if(playerTwo.getX() > 0){ //delta is to make sure we travel the same way each render/frame
-					playerTwo.setX(playerTwo.getX() - playerSpeed * delta);
-					stars.adjustPosition(playerSpeed * delta, 0);
-				}
+			  //delta is to make sure we travel the same way each render/frame
+			  if((playerTwo.getX() - playerSpeed * delta) > 0){ 
+			    playerTwo.setX(playerTwo.getX() - playerSpeed * delta);
+				  stars.adjustPosition(playerSpeed * delta, 0);
+			  }else{
+			    stars.adjustPosition(playerTwo.getX(), 0);
+			    playerTwo.setX(0);
+			  }
 			}
 			if(input.isKeyDown(Input.KEY_D)){
-				if((playerTwo.getX() + playerTwo.getWidth()) < width){
+		    if( (playerTwo.getX() + playerSpeed * delta) < (width - playerTwo.getWidth()) ){
 				  playerTwo.setX(playerTwo.getX() + playerSpeed * delta);
-				  stars.adjustPosition(-playerSpeed * delta, 0);
-				}
+			    stars.adjustPosition(-playerSpeed * delta, 0);
+			  }else{
+			    stars.adjustPosition(-(width - playerTwo.getX() - playerTwo.getWidth()), 0);
+			    playerTwo.setX(width - playerOne.getWidth());
+			  }
 			}
     }
 	}
