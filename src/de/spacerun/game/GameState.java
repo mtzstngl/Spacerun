@@ -49,7 +49,7 @@ public class GameState extends BasicGameState {
 	
 	private SimpleFont multiplayerFont;
 	private String[] multiplayerMenu;
-	private Data data;
+	private Data<Boolean> data;
 	private boolean multiplayer;
 
 	private Rectangle playerOne;
@@ -74,7 +74,7 @@ public class GameState extends BasicGameState {
 
 	private StarBackground stars;
 
-	public GameState(int ID, Data d){
+	public GameState(int ID, Data<Boolean> d){
 		this.stateID = ID;
 		data = d;
 	}

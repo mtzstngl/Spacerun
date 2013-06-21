@@ -43,9 +43,9 @@ public class MainMenuState extends BasicGameState {
   private int stateID;
   private Image image;
 
-  private Data data;
+  private Data<Boolean> data;
   
-  public MainMenuState(int ID, Data d) {
+  public MainMenuState(int ID, Data<Boolean> d) {
   	this.stateID = ID;
   	data = d;
   }

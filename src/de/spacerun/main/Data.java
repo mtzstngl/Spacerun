@@ -21,18 +21,21 @@
  */
 package de.spacerun.main;
 
-public class Data{
-  private boolean data;
+public class Data<T> {
+  private T data;
 
-  public Data(boolean status){
-    data = status;
-	}
+  public Data(){
+  }
 
-  public boolean getData(){
+  public Data(T data){
+    this.data = data;
+  }
+
+  public synchronized void setData(T data){
+    this.data = data;
+  }
+
+  public synchronized T getData(){
     return data;
-	}
-
-  public void setData(boolean status){
-    data = status;
-	}
+  }
 }

@@ -35,11 +35,11 @@ public class Spacerun extends StateBasedGame{
 	public static final int GAMESTATE = 1;
 	public static final int HIGHSCORESTATE = 2;
 	//public static final int CONTROLSTATE = 4;
-	private Data d; //used for enabling multiplayer
+	private Data<Boolean> d; //used for enabling multiplayer
 	
 	public Spacerun(){
 		super("Spacerun");
-		d = new Data(false);
+		d = new Data<Boolean>(false);
 		
 		this.addState(new MainMenuState(MAINMENUSTATE, d));
 		this.addState(new GameState(GAMESTATE, d));
