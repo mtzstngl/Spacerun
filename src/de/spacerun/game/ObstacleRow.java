@@ -38,8 +38,12 @@ public class ObstacleRow {
 		obstacle = new Rectangle[sectorCount];
 		for(int i = 0; i < sectorCount; i++){
 			int rand = (int) (Math.random() * sectorWidth);
-			obstacle[i] = new Rectangle(sectorWidth * i, position, rand, 20);
-		}
+      if(Math.random() > 0.5d){
+			  obstacle[i] = new Rectangle(sectorWidth * i, position, rand, 20);
+      }else{
+        obstacle[i] = new Rectangle(sectorWidth * (i + 1) - rand, position, rand, 20);
+      }
+    }
 	}
 	
 	public void setPosition(float pos){
