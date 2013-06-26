@@ -27,6 +27,7 @@ import java.util.Deque;
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
+import org.newdawn.slick.Image;
 import org.newdawn.slick.Input;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.geom.Rectangle;
@@ -41,7 +42,6 @@ import de.spacerun.main.Data;
 import de.spacerun.main.Spacerun;
 import de.spacerun.mainmenu.SimpleFont;
 
-//TODO: replace player and obstacles with images
 public class GameState extends BasicGameState {
 	private int stateID;
 	private int width, height;
@@ -52,8 +52,8 @@ public class GameState extends BasicGameState {
 	private Data<Boolean> data;
 	private boolean multiplayer;
 
-	private Rectangle playerOne;
-	private Rectangle playerTwo;
+	private Rectangle playerOne, playerTwo;
+	private Image pOne, pTwo;
 	private float playerSpeed;
 	
 	private boolean notHit;
@@ -94,6 +94,8 @@ public class GameState extends BasicGameState {
 		int playerWidth = gc.getWidth()/96;
 		playerOne = new Rectangle(width/2 + playerWidth/2, height - playerHeight, playerWidth, playerHeight);
 		playerTwo = new Rectangle(width/2 - playerWidth, height - playerHeight, playerWidth, playerHeight);
+		pOne = new Image("data/Spaceship1.png").getScaledCopy(playerWidth, playerHeight);
+		pTwo = new Image("data/Spaceship2.png").getScaledCopy(playerWidth, playerHeight);
 		
 		notHit = true;
 		speedStep = 100;
@@ -132,15 +134,11 @@ public class GameState extends BasicGameState {
 		
 		//Game rendering
 		//playerOne
-		g.setColor(Color.gray);
-		g.fillRect(playerOne.getX(), playerOne.getY(), playerOne.getWidth(), playerOne.getHeight());
-		g.draw(playerOne);
+		pOne.draw(playerOne.getX(), playerOne.getY());
     
     if(multiplayer){
       //playerTwo
-		  g.setColor(Color.blue);
-		  g.fillRect(playerTwo.getX(), playerTwo.getY(), playerTwo.getWidth(), playerTwo.getHeight());
-		  g.draw(playerTwo);
+		  pTwo.draw(playerTwo.getX(), playerTwo.getY());
     }
 
 		if(!obstacles.isEmpty()){
