@@ -22,6 +22,7 @@
 package de.spacerun.game;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 
 import org.newdawn.slick.Color;
@@ -37,6 +38,7 @@ import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.FadeInTransition;
 import org.newdawn.slick.state.transition.FadeOutTransition;
 
+import de.spacerun.control.SensorParser;
 import de.spacerun.highscore.FileHandler;
 import de.spacerun.main.Data;
 import de.spacerun.main.Spacerun;
@@ -49,10 +51,11 @@ public class GameState extends BasicGameState {
 	
 	private SimpleFont multiplayerFont;
 	private String[] multiplayerMenu;
-	private Data<Boolean> data;
+	private ArrayList<Data> status;
 	private boolean multiplayer;
 
 	private Rectangle playerOne, playerTwo;
+	private SensorParser spOne, spTwo;
 	private Image pOne, pTwo;
 	private float playerSpeed;
 	
@@ -74,9 +77,9 @@ public class GameState extends BasicGameState {
 
 	private StarBackground stars;
 
-	public GameState(int ID, Data<Boolean> d){
+	public GameState(int ID, ArrayList<Data> status){
 		this.stateID = ID;
-		data = d;
+		this.status = status;
 	}
 	
 	@Override
@@ -87,7 +90,7 @@ public class GameState extends BasicGameState {
 		
     multiplayerFont = new SimpleFont("data/space age.ttf", gc.getHeight()/25);
 		multiplayerMenu = new String[] {"Spieler 1 hat gewonnen!", "Spieler 2 hat gewonnen!", "Unentschieden!"};
-		multiplayer = data.getData();
+		multiplayer = (boolean)status.get(0).getData();
 
 		playerSpeed = (float) width/3491; //0.55f @ 1080p
 		int playerHeight = gc.getHeight()/22;
@@ -96,6 +99,8 @@ public class GameState extends BasicGameState {
 		playerTwo = new Rectangle(width/2 - playerWidth, height - playerHeight, playerWidth, playerHeight);
 		pOne = new Image("data/Spaceship1.png").getScaledCopy(playerWidth, playerHeight);
 		pTwo = new Image("data/Spaceship2.png").getScaledCopy(playerWidth, playerHeight);
+		spOne = (SensorParser) status.get(2).getData();
+		spTwo = (SensorParser) status.get(3).getData();
 		
 		notHit = true;
 		speedStep = 100;
@@ -192,18 +197,34 @@ public class GameState extends BasicGameState {
 	@Override
 	public void update(GameContainer gc, StateBasedGame sbg, int delta) throws SlickException {
 		Input input = gc.getInput();
+
+    //return to MainMenuState if a player disconnects
+		if(((boolean)status.get(1).getData()) && !spOne.getConnected()){
+		  status.get(0).setData(false);
+			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+			sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+		}else if(((boolean)status.get(1).getData()) && multiplayer && 
+		    (!spOne.getConnected() || !spTwo.getConnected())){
+		  status.get(0).setData(false);
+			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
+			sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
+		}
 		
 		//exiting gamestate
 		if(input.isKeyPressed(Input.KEY_ESCAPE)){
-		  data.setData(false);
+		  status.get(0).setData(false);
 			sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
 			sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
 		}
 		
 		if(notHit){
 			//move ALL the players
-			playerMovement(input, delta);
-			
+			if((boolean)status.get(1).getData()){
+			  playerMovementSensor(delta);
+      }else{
+			  playerMovement(input, delta);
+      }
+
 			//move ALL the stars
 			stars.adjustPosition(0, obstacleSpeed * delta * 2);
 		
@@ -264,13 +285,65 @@ public class GameState extends BasicGameState {
     	}
 	  }else if(input.isKeyPressed(Input.KEY_ENTER)){
     	if(selection){
-    	  data.setData(false);
+    	  status.get(0).setData(false);
     	  sbg.getState(Spacerun.MAINMENUSTATE).init(gc, sbg);
     	  sbg.enterState(Spacerun.MAINMENUSTATE, new FadeOutTransition(), new FadeInTransition());
 	    }else{
     		sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
     		sbg.enterState(Spacerun.GAMESTATE, new FadeOutTransition(), new FadeInTransition());
     	}
+    }
+	}
+
+	private void playerMovementSensor(int delta){
+	  //move playerOne
+	  spOne.updateInput();
+	  float xOne = spOne.getX()/6;//make movement speed variable
+
+    if(xOne > 0.5){
+			//delta is to make sure we travel the same way each render/frame
+			if((playerOne.getX() - playerSpeed * delta * xOne) > 0){ 
+			  playerOne.setX(playerOne.getX() - playerSpeed * delta * xOne);
+				stars.adjustPosition(playerSpeed * delta * xOne, 0);
+			}else{
+			  stars.adjustPosition(playerOne.getX(), 0);
+			  playerOne.setX(0);
+			}
+    }
+    if(xOne < -0.5){
+		  if( (playerOne.getX() + playerSpeed * delta * -xOne) < (width - playerOne.getWidth()) ){
+				playerOne.setX(playerOne.getX() + playerSpeed * delta * -xOne);
+			  stars.adjustPosition(-playerSpeed * delta * -xOne, 0);
+			}else{
+			  stars.adjustPosition(-(width - playerOne.getX() - playerOne.getWidth()), 0);
+			  playerOne.setX(width - playerOne.getWidth());
+			}
+    }
+    
+    if(multiplayer){
+		  //moving playerTwo
+      spTwo.updateInput();
+      float xTwo = spTwo.getX()/6;//make movement speed variable
+    
+      if(xTwo > 0.5){
+			  //delta is to make sure we travel the same way each render/frame
+			  if((playerTwo.getX() - playerSpeed * delta * xTwo) > 0){ 
+			    playerTwo.setX(playerTwo.getX() - playerSpeed * delta * xTwo);
+				  stars.adjustPosition(playerSpeed * delta * xTwo, 0);
+			  }else{
+			    stars.adjustPosition(playerTwo.getX(), 0);
+			    playerTwo.setX(0);
+			  }
+      }
+      if(xTwo < -0.5){
+		    if( (playerTwo.getX() + playerSpeed * delta * -xTwo) < (width - playerTwo.getWidth()) ){
+				  playerTwo.setX(playerTwo.getX() + playerSpeed * delta * -xTwo);
+			    stars.adjustPosition(-playerSpeed * delta * -xTwo, 0);
+			  }else{
+			    stars.adjustPosition(-(width - playerTwo.getX() - playerTwo.getWidth()), 0);
+			    playerTwo.setX(width - playerOne.getWidth());
+			  }
+      }
     }
 	}
 

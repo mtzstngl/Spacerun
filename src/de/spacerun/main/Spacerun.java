@@ -21,11 +21,15 @@
 */
 package de.spacerun.main;
 
+import java.util.ArrayList;
+
 import org.newdawn.slick.AppGameContainer;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.SlickException;
 import org.newdawn.slick.state.StateBasedGame;
 
+import de.spacerun.control.ControlState;
+import de.spacerun.control.SensorParser;
 import de.spacerun.game.GameState;
 import de.spacerun.highscore.HighscoreState;
 import de.spacerun.mainmenu.MainMenuState;
@@ -34,17 +38,21 @@ public class Spacerun extends StateBasedGame{
 	public static final int MAINMENUSTATE = 0;
 	public static final int GAMESTATE = 1;
 	public static final int HIGHSCORESTATE = 2;
-	//public static final int CONTROLSTATE = 4;
-	private Data<Boolean> d; //used for enabling multiplayer
+	public static final int CONTROLSTATE = 3;
+	private ArrayList<Data> data;
 	
 	public Spacerun(){
 		super("Spacerun");
-		d = new Data<Boolean>(false);
+		data = new ArrayList<Data>();
+		data.add(new Data<Boolean>(false)); //mulitplayer
+		data.add(new Data<Boolean>(false)); //control mode
+		data.add(new Data<SensorParser>(new SensorParser(23456))); //sensor server player 1
+		data.add(new Data<SensorParser>(new SensorParser(23457))); //sensor server player 2
 		
-		this.addState(new MainMenuState(MAINMENUSTATE, d));
-		this.addState(new GameState(GAMESTATE, d));
+		this.addState(new MainMenuState(MAINMENUSTATE, data));
+		this.addState(new GameState(GAMESTATE, data));
 		this.addState(new HighscoreState(HIGHSCORESTATE));
-		//this.addState(new ControlState(CONTROLSTATE));
+		this.addState(new ControlState(CONTROLSTATE, data));
 		this.enterState(MAINMENUSTATE);
 	}
 

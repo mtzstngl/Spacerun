@@ -21,6 +21,8 @@
 */
 package de.spacerun.mainmenu;
 
+import java.util.ArrayList;
+
 import org.newdawn.slick.Color;
 import org.newdawn.slick.GameContainer;
 import org.newdawn.slick.Graphics;
@@ -31,6 +33,7 @@ import org.newdawn.slick.state.BasicGameState;
 import org.newdawn.slick.state.StateBasedGame;
 import org.newdawn.slick.state.transition.VerticalSplitTransition;
 
+import de.spacerun.control.SensorParser;
 import de.spacerun.main.Data;
 import de.spacerun.main.Spacerun;
 
@@ -43,17 +46,21 @@ public class MainMenuState extends BasicGameState {
   private int stateID;
   private Image image;
 
-  private Data<Boolean> data;
-  
-  public MainMenuState(int ID, Data<Boolean> d) {
+  private ArrayList<Data> status;
+  private SensorParser spOne, spTwo;
+  private String[] connectionStatus;
+
+  public MainMenuState(int ID, ArrayList<Data> status) {
   	this.stateID = ID;
-  	data = d;
+  	this.status = status;
   }
 
   @Override
   public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
   	index = 0;
     menuText = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
+    connectionStatus = new String[] {"Player 1: connected", "Player 1: disconnected",
+        "Player 2:connected", "Player 2: disconnected"};
     
     width = gc.getWidth();
     headerSpace = gc.getHeight()/(menuText.length + 1);
@@ -69,6 +76,9 @@ public class MainMenuState extends BasicGameState {
     }
     
     image = new Image("data/Universe.png");
+
+    spOne = (SensorParser)status.get(2).getData();
+    spTwo = (SensorParser)status.get(3).getData();
   }
  
   @Override
@@ -87,6 +97,23 @@ public class MainMenuState extends BasicGameState {
     	
     	start += menuSpace * 2;
     }
+    
+    // player connection status rendering
+    if((boolean)status.get(1).getData()){
+      float tmpHeight = menuFont.get().getHeight(connectionStatus[0]);
+      
+      if(spOne.getConnected()){
+        menuFont.get().drawString(0, gc.getHeight() - (2 * tmpHeight), connectionStatus[0]);
+      }else{
+        menuFont.get().drawString(0, gc.getHeight() - (2 * tmpHeight), connectionStatus[1], Color.red);
+      }
+
+      if(spTwo.getConnected()){
+        menuFont.get().drawString(0, gc.getHeight() - tmpHeight, connectionStatus[2]);
+      }else{
+        menuFont.get().drawString(0, gc.getHeight() - tmpHeight, connectionStatus[3], Color.red);
+      }
+    }
   }
   
   @Override
@@ -102,19 +129,25 @@ public class MainMenuState extends BasicGameState {
         index++;
       }
     }else if(input.isKeyPressed(Input.KEY_ENTER)){
-  	  if(menuText[index] == "Spiel starten"){
-  		  sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
-  		  sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
-    	}else if(menuText[index] == "Multiplayer"){
-    	  data.setData(true);
-  		  sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
-  		  sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
+  	  if(menuText[index] == "Spiel starten"){ //make sure player is connected
+  		  if( (spOne.getConnected() && ((boolean)status.get(1).getData())) || 
+  		      !(boolean)status.get(1).getData() ){
+  		    sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+  		    sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
+        }
+    	}else if(menuText[index] == "Multiplayer"){ //make sure player is connected
+    	  if( (spOne.getConnected() && spTwo.getConnected() && ((boolean)status.get(1).getData())) ||
+    	      !(boolean)status.get(1).getData()){
+    	    status.get(0).setData(true);
+  		    sbg.getState(Spacerun.GAMESTATE).init(gc, sbg);
+  		    sbg.enterState(Spacerun.GAMESTATE, null, new VerticalSplitTransition());
+        }
   	  }else if(menuText[index] == "Highscores"){
   	    sbg.getState(Spacerun.HIGHSCORESTATE).init(gc, sbg);
     	  sbg.enterState(Spacerun.HIGHSCORESTATE, null, new VerticalSplitTransition());
       }else if(menuText[index] == "Steuerung"){
-  		  //sbg.getState(Spacerun.CONTROLSTATE).init(gc, sbg);
-  		  //sbg.enterState(Spacerun.CONTROLSTATE), null, new VerticalSplitTransition();
+        sbg.getState(Spacerun.CONTROLSTATE).init(gc, sbg);
+        sbg.enterState(Spacerun.CONTROLSTATE, null, new VerticalSplitTransition());
   		}else if(menuText[index] == "Exit"){
     	  gc.exit();
   	  }   
