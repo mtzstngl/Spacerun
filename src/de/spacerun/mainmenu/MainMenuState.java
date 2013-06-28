@@ -37,6 +37,7 @@ import de.spacerun.control.SensorParser;
 import de.spacerun.main.Data;
 import de.spacerun.main.Spacerun;
 
+@SuppressWarnings({"rawtypes", "unchecked"}) //prevent eclipse from displaying a warning because Data is a generic type
 public class MainMenuState extends BasicGameState {
   private SimpleFont menuFont, headerFont;
   private int width, index, headerSpace, menuSpace;

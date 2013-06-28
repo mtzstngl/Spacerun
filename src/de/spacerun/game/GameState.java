@@ -44,6 +44,7 @@ import de.spacerun.main.Data;
 import de.spacerun.main.Spacerun;
 import de.spacerun.mainmenu.SimpleFont;
 
+@SuppressWarnings({"rawtypes","unchecked"}) //prevent eclipse from displaying a warning because Data is a generic type
 public class GameState extends BasicGameState {
 	private int stateID;
 	private int width, height;

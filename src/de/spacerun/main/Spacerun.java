@@ -34,6 +34,7 @@ import de.spacerun.game.GameState;
 import de.spacerun.highscore.HighscoreState;
 import de.spacerun.mainmenu.MainMenuState;
 
+@SuppressWarnings({"rawtypes"}) //prevent eclipse from displaying a warning because Data is a generic type
 public class Spacerun extends StateBasedGame{
 	public static final int MAINMENUSTATE = 0;
 	public static final int GAMESTATE = 1;
