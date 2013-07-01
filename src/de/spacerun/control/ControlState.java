@@ -21,6 +21,8 @@
  */
 package de.spacerun.control;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 
 import org.newdawn.slick.Color;
@@ -46,6 +48,8 @@ public class ControlState extends BasicGameState {
   private SensorParser spOne, spTwo;
   private SimpleFont font;
   private String[] connectionStatus;
+  private String IPaddress;
+  private float IPx, IPy;
   
   private String[] menu;
   private int menuPosition[];
@@ -75,6 +79,15 @@ public class ControlState extends BasicGameState {
     spOne = (SensorParser) status.get(2).getData();
     spTwo = (SensorParser) status.get(3).getData();
 
+    try {
+      IPaddress = InetAddress.getLocalHost().getHostAddress();
+    }catch(UnknownHostException e){
+      IPaddress = "unknown"; //in case there is an exception
+    }finally{
+      IPx = gc.getWidth() - font.get().getWidth(IPaddress);
+      IPy = gc.getHeight() - font.get().getHeight(IPaddress);
+    }
+
     stars = new StarBackground(gc.getWidth(), gc.getHeight(), (int)(gc.getHeight() * gc.getWidth() / 4147));
   }
 
@@ -85,6 +98,13 @@ public class ControlState extends BasicGameState {
     
     if((boolean)status.get(1).getData()){
       index = 1;
+    }
+
+    //draw the IP address
+    if(index == 1){
+      font.get().drawString(IPx, IPy, IPaddress);
+    }else{
+      font.get().drawString(IPx, IPy, IPaddress, Color.red);
     }
 
     //draw the menu

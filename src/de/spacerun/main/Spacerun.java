@@ -49,7 +49,7 @@ public class Spacerun extends StateBasedGame{
 		data.add(new Data<Boolean>(false)); //control mode
 		data.add(new Data<SensorParser>(new SensorParser(23456))); //sensor server player 1
 		data.add(new Data<SensorParser>(new SensorParser(23457))); //sensor server player 2
-		
+
 		this.addState(new MainMenuState(MAINMENUSTATE, data));
 		this.addState(new GameState(GAMESTATE, data));
 		this.addState(new HighscoreState(HIGHSCORESTATE));
@@ -66,7 +66,8 @@ public class Spacerun extends StateBasedGame{
     AppGameContainer app = new AppGameContainer(new Spacerun());
     app.setDisplayMode(app.getScreenWidth(), app.getScreenHeight(), true);
     app.setMouseGrabbed(true);
-    app.setShowFPS(true);
+    app.setVSync(true);
+    app.setShowFPS(false);
     app.start();
   }
 }

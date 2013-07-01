@@ -119,13 +119,9 @@ public class HighscoreState extends BasicGameState{
     Input input = gc.getInput();
 
     if(input.isKeyPressed(Input.KEY_LEFT)){
-      if(selection){
-        selection = false;
-      }
+      selection = false;
     }else if(input.isKeyPressed(Input.KEY_RIGHT)){
-      if(!selection){
-        selection = true; 
-      }
+      selection = true; 
     }else if(input.isKeyPressed(Input.KEY_ENTER)){
       if(selection){
         fHandler.deleteHighscore();
