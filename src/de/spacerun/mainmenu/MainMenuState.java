@@ -61,7 +61,7 @@ public class MainMenuState extends BasicGameState {
   	index = 0;
     menuText = new String[] {"Spiel starten", "Multiplayer", "Highscores", "Steuerung", "Exit"};
     connectionStatus = new String[] {"Player 1: connected", "Player 1: disconnected",
-        "Player 2:connected", "Player 2: disconnected"};
+        "Player 2: connected", "Player 2: disconnected"};
     
     width = gc.getWidth();
     headerSpace = gc.getHeight()/(menuText.length + 1);

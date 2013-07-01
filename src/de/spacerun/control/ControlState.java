@@ -63,7 +63,7 @@ public class ControlState extends BasicGameState {
   @Override
   public void init(GameContainer gc, StateBasedGame sbg) throws SlickException {
     connectionStatus = new String[] {"Player 1: connected", "Player 1: disconnected",
-        "Player 2:connected", "Player 2: disconnected"};
+        "Player 2: connected", "Player 2: disconnected"};
 
     int fontSize = gc.getHeight()/36; // 30 @ 1080p
     font =  new SimpleFont("data/space age.ttf", fontSize);
